@@ -1,0 +1,42 @@
+# Lean / Lake build artifacts (keep lean-toolchain, lakefile.toml,
+# lake-manifest.json and every .lean file under version control)
+.lake
+lean/.lake
+build/
+lean/build/
+*.olean
+*.ilean
+*.trace
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.nav
+*.snm
+*.vrb
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+
+# Python / notebooks
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*:Zone.Identifier
+.vscode/
+
+# Personal documents
+DNI*
+*_DNI*
+
+# Original prompt kept at repo root untracked (tracked copy lives in extra/)
+/Prompt 01*.docx

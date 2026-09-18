@@ -1,0 +1,18 @@
+name = "IdeTalamas"
+version = "0.1.0"
+defaultTargets = ["IdeTalamas"]
+
+[leanOptions]
+pp.unicode.fun = true
+relaxedAutoImplicit = false
+autoImplicit = false
+
+# Pinned to the same Mathlib tag as AppliedModelingLib (v4.30.0-rc2)
+# so that its skills and modules stay compatible with this project.
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.30.0-rc2"
+
+[[lean_lib]]
+name = "IdeTalamas"
