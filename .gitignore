@@ -1,9 +1,9 @@
 # Lean / Lake build artifacts (keep lean-toolchain, lakefile.toml,
 # lake-manifest.json and every .lean file under version control)
 .lake
-lean/.lake
+extra/lean-sandbox/.lake
 build/
-lean/build/
+extra/lean-sandbox/build/
 *.olean
 *.ilean
 *.trace

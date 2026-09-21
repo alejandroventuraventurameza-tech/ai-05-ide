@@ -30,11 +30,12 @@ a deep-dive tutorial, and extensions/simulations.
 | `paper/` | Paper PDF and primary sources |
 | `extra/` | Tutorials, derivations, secondary sources, original assignment prompt |
 | `hand/` | Photos of handwritten derivations |
-| `lean/` | Lake project (`IdeTalamas`), Lean 4 + Mathlib |
+| `lean/` | AppliedModelingLib generated paper folder (`IT25KnowledgeEconomy`), copied as produced |
+| `extra/lean-sandbox/` | Our own Lake project (`IdeTalamas`) for experiments, Lean 4 + Mathlib |
 
 ## Lean conventions
 - Toolchain `leanprover/lean4:v4.30.0-rc2`, Mathlib tag `v4.30.0-rc2` (same pin as AppliedModelingLib).
-- Build from `lean/`: `lake exe cache get && lake build`.
+- Build from `extra/lean-sandbox/`: `lake exe cache get && lake build`.
 - Forbidden: `sorry`, `admit`, `axiom`, `native_decide`.
 - Keep `lean-toolchain`, `lakefile.toml`, `lake-manifest.json` and all `.lean` files tracked; `.lake/` is ignored.
 
