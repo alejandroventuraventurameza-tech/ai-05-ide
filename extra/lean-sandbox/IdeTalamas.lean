@@ -1,2 +1,3 @@
--- Root module of the Ide & Talamàs (2025) formalization.
+-- Root module of the Ide & Talamas (2025) formalization.
 import IdeTalamas.Basic
+import IdeTalamas.Discrete

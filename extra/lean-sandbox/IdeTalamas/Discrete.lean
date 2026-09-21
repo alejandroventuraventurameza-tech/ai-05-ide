@@ -1,0 +1,195 @@
+/-
+Discrete three-type version of Ide & Talamas (2025), "Artificial Intelligence in the
+Knowledge Economy", JPE 133(12).  Source version: arXiv:2312.05481v11.
+
+This file formalizes the statements of `extra/derivation/discrete-three-type.pdf` for the
+case in which the AI replicates the middle type exactly (a = z₂):
+
+* `span_strict_anti`      : Lemma 4, the solver's surplus is strictly decreasing in worker knowledge
+* `bottom_gains_iff`      : Corollary 1, the capability threshold for winners at the bottom
+* `share_identity`        : Corollary 3, the automated type's rent is shared among its workers
+* `top_loses`             : Corollary 4, the most knowledgeable type loses relative to no AI
+* `no_positive_profit_*`  : condition (N) for every admissible firm configuration
+-/
+import Mathlib
+
+namespace IdeTalamas
+
+/-- Primitives of the discrete three-type economy. -/
+structure Params where
+  h : ℝ
+  z₁ : ℝ
+  z₂ : ℝ
+  z₃ : ℝ
+  h_pos : 0 < h
+  h_lt_one : h < 1
+  z₁_nonneg : 0 ≤ z₁
+  z₁_lt_z₂ : z₁ < z₂
+  z₂_lt_z₃ : z₂ < z₃
+  z₃_lt_one : z₃ < 1
+
+namespace Params
+
+variable (P : Params)
+
+lemma z₁_lt_one : P.z₁ < 1 :=
+  lt_trans (lt_trans P.z₁_lt_z₂ P.z₂_lt_z₃) P.z₃_lt_one
+
+lemma z₂_lt_one : P.z₂ < 1 := lt_trans P.z₂_lt_z₃ P.z₃_lt_one
+
+lemma z₂_nonneg : 0 ≤ P.z₂ := le_of_lt (lt_of_le_of_lt P.z₁_nonneg P.z₁_lt_z₂)
+
+lemma z₃_nonneg : 0 ≤ P.z₃ := le_of_lt (lt_of_le_of_lt (lt_of_le_of_lt P.z₁_nonneg P.z₁_lt_z₂) P.z₂_lt_z₃)
+
+/-- Span of control: workers of knowledge `z` supervised by one solver. -/
+noncomputable def n (z : ℝ) : ℝ := 1 / (P.h * (1 - z))
+
+lemma n_pos {z : ℝ} (hz : z < 1) : 0 < P.n z :=
+  div_pos one_pos (mul_pos P.h_pos (by linarith))
+
+/-- `n z` and `h (1 - z)` are reciprocals: one worker's questions use `h (1 - z)` of solver time. -/
+lemma n_mul_time {z : ℝ} (hz : z < 1) : P.n z * (P.h * (1 - z)) = 1 := by
+  have : P.h * (1 - z) ≠ 0 := ne_of_gt (mul_pos P.h_pos (by linarith))
+  field_simp [n]
+
+/-- Lemma 4: with workers paid their own output, a solver's surplus strictly falls in worker
+knowledge, because the team shrinks faster than the surplus per worker grows. -/
+theorem span_strict_anti {x y s : ℝ} (hx : x < y) (hy : y ≤ s) (hs : s < 1) :
+    P.n y * (s - y) < P.n x * (s - x) := by
+  have hy1 : y < 1 := lt_of_le_of_lt hy hs
+  have hx1 : x < 1 := lt_trans hx hy1
+  have hdx : (0:ℝ) < P.h * (1 - x) := mul_pos P.h_pos (by linarith)
+  have hdy : (0:ℝ) < P.h * (1 - y) := mul_pos P.h_pos (by linarith)
+  have key : (s - y) / (P.h * (1 - y)) < (s - x) / (P.h * (1 - x)) := by
+    rw [div_lt_div_iff hdy hdx]
+    nlinarith [P.h_pos, sub_pos.mpr hs, sub_pos.mpr hx]
+  simpa [n, div_eq_mul_inv, mul_comm] using key
+
+/-! ### Wages -/
+
+/-- Pre-AI wage of the least knowledgeable type (Theorem 1): its own output. -/
+noncomputable def wPre₁ : ℝ := P.z₁
+
+/-- Pre-AI wage of the middle type (Theorem 1). -/
+noncomputable def wPre₂ : ℝ := max P.z₂ (P.n P.z₁ * (P.z₂ - P.z₁))
+
+/-- Pre-AI wage of the most knowledgeable type (Theorem 1). -/
+noncomputable def wPre₃ : ℝ :=
+  max (max P.z₃ (P.n P.z₁ * (P.z₃ - P.z₁))) (P.n P.z₂ * (P.z₃ - P.wPre₂))
+
+/-- Post-AI wage of the least knowledgeable type (Theorem 2), with `a = z₂`.
+Note `1 - 1 / n z₁ = 1 - h (1 - z₁)`. -/
+noncomputable def wAut₁ : ℝ := max P.z₁ (P.z₂ * (1 - P.h * (1 - P.z₁)))
+
+/-- Post-AI wage of the automated type (Corollary 3): it is priced at the rental rate of compute. -/
+noncomputable def wAut₂ : ℝ := P.z₂
+
+/-- Post-AI wage of the most knowledgeable type (Theorem 2), with `a = z₂`. -/
+noncomputable def wAut₃ : ℝ :=
+  max (max P.z₃ (P.n P.z₂ * (P.z₃ - P.z₂))) (P.n P.z₁ * (P.z₃ - P.wAut₁))
+
+lemma z₁_le_wAut₁ : P.z₁ ≤ P.wAut₁ := le_max_left _ _
+
+lemma bound_wAut₁ : P.z₂ * (1 - P.h * (1 - P.z₁)) ≤ P.wAut₁ := le_max_right _ _
+
+lemma wAut₁_nonneg : 0 ≤ P.wAut₁ := le_trans P.z₁_nonneg P.z₁_le_wAut₁
+
+lemma z₃_le_wAut₃ : P.z₃ ≤ P.wAut₃ := le_trans (le_max_left _ _) (le_max_left _ _)
+
+/-! ### Corollaries -/
+
+/-- Corollary 1: there are winners at the bottom iff the AI is capable enough.  The threshold
+`z₁ / (1 - h (1 - z₁))` is a statement about capability, not about autonomy. -/
+theorem bottom_gains_iff :
+    P.wPre₁ < P.wAut₁ ↔ P.z₁ / (1 - P.h * (1 - P.z₁)) < P.z₂ := by
+  have hden : (0:ℝ) < 1 - P.h * (1 - P.z₁) := by
+    nlinarith [P.h_pos, P.h_lt_one, P.z₁_nonneg, P.z₁_lt_one]
+  constructor
+  · intro hlt
+    rw [div_lt_iff hden]
+    have : P.z₁ < P.z₂ * (1 - P.h * (1 - P.z₁)) := by
+      rcases max_cases P.z₁ (P.z₂ * (1 - P.h * (1 - P.z₁))) with ⟨he, _⟩ | ⟨he, _⟩ <;>
+        simp only [wAut₁, wPre₁, he] at hlt <;> linarith
+    linarith [this]
+  · intro hlt
+    rw [div_lt_iff hden] at hlt
+    have : P.z₁ < P.z₂ * (1 - P.h * (1 - P.z₁)) := by linarith
+    simp only [wPre₁, wAut₁]
+    exact lt_of_lt_of_le this (le_max_right _ _)
+
+/-- Corollary 3: when the automated type earned a rent, the gain of the bottom type equals that
+rent divided by the team size.  The rent lost by the automated type is shared, one to one, among
+the workers it used to supervise. -/
+theorem share_identity (hrent : P.z₂ < P.n P.z₁ * (P.z₂ - P.z₁))
+    (hgain : P.z₁ < P.z₂ * (1 - P.h * (1 - P.z₁))) :
+    P.wAut₁ - P.wPre₁ = (P.wPre₂ - P.wAut₂) / P.n P.z₁ := by
+  have hn : (0:ℝ) < P.n P.z₁ := P.n_pos P.z₁_lt_one
+  have hw₂ : P.wPre₂ = P.n P.z₁ * (P.z₂ - P.z₁) := max_eq_right (le_of_lt hrent)
+  have hw₁ : P.wAut₁ = P.z₂ * (1 - P.h * (1 - P.z₁)) := max_eq_right (le_of_lt hgain)
+  have htime : P.n P.z₁ * (P.h * (1 - P.z₁)) = 1 := P.n_mul_time P.z₁_lt_one
+  rw [hw₁, hw₂]
+  field_simp [wPre₁, wAut₂]
+  nlinarith [htime]
+
+/-- Corollary 4: the most knowledgeable type loses relative to the pre-AI economy.  Both terms of
+its post-AI wage are dominated: the AI team is smaller (Lemma 4) and the human team is more
+expensive, while under (A1) the bottom type earned no rent that could be captured. -/
+theorem top_loses : P.wAut₃ ≤ P.wPre₃ := by
+  have h₁ : P.z₃ ≤ P.wPre₃ := le_trans (le_max_left _ _) (le_max_left _ _)
+  have h₂ : P.n P.z₂ * (P.z₃ - P.z₂) ≤ P.wPre₃ := by
+    have := P.span_strict_anti P.z₁_lt_z₂ (le_of_lt P.z₂_lt_z₃) P.z₃_lt_one
+    exact le_trans (le_of_lt this) (le_trans (le_max_right _ _) (le_max_left _ _))
+  have h₃ : P.n P.z₁ * (P.z₃ - P.wAut₁) ≤ P.wPre₃ := by
+    have hn : (0:ℝ) < P.n P.z₁ := P.n_pos P.z₁_lt_one
+    have : P.n P.z₁ * (P.z₃ - P.wAut₁) ≤ P.n P.z₁ * (P.z₃ - P.z₁) :=
+      mul_le_mul_of_nonneg_left (by linarith [P.z₁_le_wAut₁]) (le_of_lt hn)
+    exact le_trans this (le_trans (le_max_right _ _) (le_max_left _ _))
+  exact max_le (max_le h₁ h₂) h₃
+
+/-! ### Condition (N): no admissible configuration earns positive profit (autonomous AI, r = z₂) -/
+
+/-- A top-automated firm (AI solver, workers of type 1) cannot earn a positive profit. -/
+theorem no_positive_profit_tA₁ :
+    P.n P.z₁ * (P.z₂ - P.wAut₁) - P.z₂ ≤ 0 := by
+  have hn : (0:ℝ) < P.n P.z₁ := P.n_pos P.z₁_lt_one
+  have htime : P.n P.z₁ * (P.h * (1 - P.z₁)) = 1 := P.n_mul_time P.z₁_lt_one
+  have hb : P.z₂ - P.wAut₁ ≤ P.z₂ * (P.h * (1 - P.z₁)) := by
+    have := P.bound_wAut₁; nlinarith
+  calc P.n P.z₁ * (P.z₂ - P.wAut₁) - P.z₂
+      ≤ P.n P.z₁ * (P.z₂ * (P.h * (1 - P.z₁))) - P.z₂ := by nlinarith
+    _ = 0 := by nlinarith [htime]
+
+/-- A two-layer human firm with a type-2 solver and type-1 workers cannot earn a positive profit.
+This is the same inequality as `no_positive_profit_tA₁`, and it is what pins the automated type's
+wage at `z₂`. -/
+theorem no_positive_profit_21 :
+    P.n P.z₁ * (P.z₂ - P.wAut₁) - P.wAut₂ ≤ 0 := P.no_positive_profit_tA₁
+
+/-- A firm hiring a type-3 solver and AI workers cannot earn a positive profit. -/
+theorem no_positive_profit_bA₃ :
+    P.n P.z₂ * (P.z₃ - P.z₂) - P.wAut₃ ≤ 0 := by
+  have : P.n P.z₂ * (P.z₃ - P.z₂) ≤ P.wAut₃ :=
+    le_trans (le_max_right _ _) (le_max_left _ _)
+  linarith
+
+/-- A firm hiring a type-3 solver and type-1 workers cannot earn a positive profit. -/
+theorem no_positive_profit_31 :
+    P.n P.z₁ * (P.z₃ - P.wAut₁) - P.wAut₃ ≤ 0 := by
+  have : P.n P.z₁ * (P.z₃ - P.wAut₁) ≤ P.wAut₃ := le_max_right _ _
+  linarith
+
+/-- One-layer human firms cannot earn a positive profit. -/
+theorem no_positive_profit_one_layer :
+    P.z₁ - P.wAut₁ ≤ 0 ∧ P.z₂ - P.wAut₂ ≤ 0 ∧ P.z₃ - P.wAut₃ ≤ 0 := by
+  refine ⟨by linarith [P.z₁_le_wAut₁], by simp [wAut₂], by linarith [P.z₃_le_wAut₃]⟩
+
+/-- A firm whose solver and workers are the same type cannot earn a positive profit, for any type
+whose wage is at least its own output. -/
+theorem no_positive_profit_same_type {z w : ℝ} (hz : z < 1) (hzw : z ≤ w) (hw : 0 ≤ w) :
+    P.n z * (z - w) - w ≤ 0 := by
+  have hn : (0:ℝ) < P.n z := P.n_pos hz
+  nlinarith
+
+end Params
+
+end IdeTalamas
