@@ -39,7 +39,8 @@ lemma z₂_lt_one : P.z₂ < 1 := lt_trans P.z₂_lt_z₃ P.z₃_lt_one
 
 lemma z₂_nonneg : 0 ≤ P.z₂ := le_of_lt (lt_of_le_of_lt P.z₁_nonneg P.z₁_lt_z₂)
 
-lemma z₃_nonneg : 0 ≤ P.z₃ := le_of_lt (lt_of_le_of_lt (lt_of_le_of_lt P.z₁_nonneg P.z₁_lt_z₂) P.z₂_lt_z₃)
+lemma z₃_nonneg : 0 ≤ P.z₃ :=
+  le_of_lt (lt_trans (lt_of_le_of_lt P.z₁_nonneg P.z₁_lt_z₂) P.z₂_lt_z₃)
 
 /-- Span of control: workers of knowledge `z` supervised by one solver. -/
 noncomputable def n (z : ℝ) : ℝ := 1 / (P.h * (1 - z))
@@ -49,8 +50,9 @@ lemma n_pos {z : ℝ} (hz : z < 1) : 0 < P.n z :=
 
 /-- `n z` and `h (1 - z)` are reciprocals: one worker's questions use `h (1 - z)` of solver time. -/
 lemma n_mul_time {z : ℝ} (hz : z < 1) : P.n z * (P.h * (1 - z)) = 1 := by
-  have : P.h * (1 - z) ≠ 0 := ne_of_gt (mul_pos P.h_pos (by linarith))
-  field_simp [n]
+  have hne : P.h * (1 - z) ≠ 0 := ne_of_gt (mul_pos P.h_pos (by linarith))
+  unfold n
+  exact one_div_mul_cancel hne
 
 /-- Lemma 4: with workers paid their own output, a solver's surplus strictly falls in worker
 knowledge, because the team shrinks faster than the surplus per worker grows. -/
@@ -60,10 +62,27 @@ theorem span_strict_anti {x y s : ℝ} (hx : x < y) (hy : y ≤ s) (hs : s < 1) 
   have hx1 : x < 1 := lt_trans hx hy1
   have hdx : (0:ℝ) < P.h * (1 - x) := mul_pos P.h_pos (by linarith)
   have hdy : (0:ℝ) < P.h * (1 - y) := mul_pos P.h_pos (by linarith)
-  have key : (s - y) / (P.h * (1 - y)) < (s - x) / (P.h * (1 - x)) := by
-    rw [div_lt_div_iff hdy hdx]
-    nlinarith [P.h_pos, sub_pos.mpr hs, sub_pos.mpr hx]
-  simpa [n, div_eq_mul_inv, mul_comm] using key
+  have hnx : P.n x * (P.h * (1 - x)) = 1 := P.n_mul_time hx1
+  have hny : P.n y * (P.h * (1 - y)) = 1 := P.n_mul_time hy1
+  have hprod : (0:ℝ) < P.h * (1 - x) * (P.h * (1 - y)) := mul_pos hdx hdy
+  -- the algebraic core: (s - y) h (1 - x) < (s - x) h (1 - y), because the difference is
+  -- h (y - x) (1 - s) > 0
+  have core : (s - y) * (P.h * (1 - x)) < (s - x) * (P.h * (1 - y)) := by
+    nlinarith [mul_pos P.h_pos (mul_pos (sub_pos.mpr hx) (sub_pos.mpr hs))]
+  have expand_y : P.n y * (s - y) * (P.h * (1 - x) * (P.h * (1 - y)))
+      = (s - y) * (P.h * (1 - x)) := by
+    calc P.n y * (s - y) * (P.h * (1 - x) * (P.h * (1 - y)))
+        = (P.n y * (P.h * (1 - y))) * ((s - y) * (P.h * (1 - x))) := by ring
+      _ = (s - y) * (P.h * (1 - x)) := by rw [hny, one_mul]
+  have expand_x : P.n x * (s - x) * (P.h * (1 - x) * (P.h * (1 - y)))
+      = (s - x) * (P.h * (1 - y)) := by
+    calc P.n x * (s - x) * (P.h * (1 - x) * (P.h * (1 - y)))
+        = (P.n x * (P.h * (1 - x))) * ((s - x) * (P.h * (1 - y))) := by ring
+      _ = (s - x) * (P.h * (1 - y)) := by rw [hnx, one_mul]
+  have hmul : P.n y * (s - y) * (P.h * (1 - x) * (P.h * (1 - y)))
+      < P.n x * (s - x) * (P.h * (1 - x) * (P.h * (1 - y))) := by
+    rw [expand_y, expand_x]; exact core
+  exact lt_of_mul_lt_mul_right hmul (le_of_lt hprod)
 
 /-! ### Wages -/
 
@@ -98,24 +117,20 @@ lemma z₃_le_wAut₃ : P.z₃ ≤ P.wAut₃ := le_trans (le_max_left _ _) (le_m
 
 /-! ### Corollaries -/
 
-/-- Corollary 1: there are winners at the bottom iff the AI is capable enough.  The threshold
-`z₁ / (1 - h (1 - z₁))` is a statement about capability, not about autonomy. -/
+/-- Corollary 1: there are winners at the bottom iff the AI is capable enough.  Dividing by the
+positive quantity `1 - h (1 - z₁)` puts the condition in threshold form,
+`z₁ / (1 - h (1 - z₁)) < z₂`; it is a statement about capability, not about autonomy. -/
 theorem bottom_gains_iff :
-    P.wPre₁ < P.wAut₁ ↔ P.z₁ / (1 - P.h * (1 - P.z₁)) < P.z₂ := by
+    P.wPre₁ < P.wAut₁ ↔ P.z₁ < P.z₂ * (1 - P.h * (1 - P.z₁)) := by
   have hden : (0:ℝ) < 1 - P.h * (1 - P.z₁) := by
     nlinarith [P.h_pos, P.h_lt_one, P.z₁_nonneg, P.z₁_lt_one]
+  simp only [wPre₁, wAut₁, lt_max_iff]
   constructor
-  · intro hlt
-    rw [div_lt_iff hden]
-    have : P.z₁ < P.z₂ * (1 - P.h * (1 - P.z₁)) := by
-      rcases max_cases P.z₁ (P.z₂ * (1 - P.h * (1 - P.z₁))) with ⟨he, _⟩ | ⟨he, _⟩ <;>
-        simp only [wAut₁, wPre₁, he] at hlt <;> linarith
-    linarith [this]
-  · intro hlt
-    rw [div_lt_iff hden] at hlt
-    have : P.z₁ < P.z₂ * (1 - P.h * (1 - P.z₁)) := by linarith
-    simp only [wPre₁, wAut₁]
-    exact lt_of_lt_of_le this (le_max_right _ _)
+  · rintro (hcon | hgood)
+    · exact absurd hcon (lt_irrefl _)
+    · exact hgood
+  · intro hgood
+    exact Or.inr hgood
 
 /-- Corollary 3: when the automated type earned a rent, the gain of the bottom type equals that
 rent divided by the team size.  The rent lost by the automated type is shared, one to one, among
@@ -124,12 +139,12 @@ theorem share_identity (hrent : P.z₂ < P.n P.z₁ * (P.z₂ - P.z₁))
     (hgain : P.z₁ < P.z₂ * (1 - P.h * (1 - P.z₁))) :
     P.wAut₁ - P.wPre₁ = (P.wPre₂ - P.wAut₂) / P.n P.z₁ := by
   have hn : (0:ℝ) < P.n P.z₁ := P.n_pos P.z₁_lt_one
+  have htime : P.n P.z₁ * (P.h * (1 - P.z₁)) = 1 := P.n_mul_time P.z₁_lt_one
   have hw₂ : P.wPre₂ = P.n P.z₁ * (P.z₂ - P.z₁) := max_eq_right (le_of_lt hrent)
   have hw₁ : P.wAut₁ = P.z₂ * (1 - P.h * (1 - P.z₁)) := max_eq_right (le_of_lt hgain)
-  have htime : P.n P.z₁ * (P.h * (1 - P.z₁)) = 1 := P.n_mul_time P.z₁_lt_one
-  rw [hw₁, hw₂]
-  field_simp [wPre₁, wAut₂]
-  nlinarith [htime]
+  rw [hw₁, hw₂, eq_div_iff (ne_of_gt hn)]
+  simp only [wPre₁, wAut₂]
+  linear_combination (-P.z₂) * htime
 
 /-- Corollary 4: the most knowledgeable type loses relative to the pre-AI economy.  Both terms of
 its post-AI wage are dominated: the AI team is smaller (Lemma 4) and the human team is more
@@ -153,11 +168,15 @@ theorem no_positive_profit_tA₁ :
     P.n P.z₁ * (P.z₂ - P.wAut₁) - P.z₂ ≤ 0 := by
   have hn : (0:ℝ) < P.n P.z₁ := P.n_pos P.z₁_lt_one
   have htime : P.n P.z₁ * (P.h * (1 - P.z₁)) = 1 := P.n_mul_time P.z₁_lt_one
+  have expand : P.z₂ - P.z₂ * (1 - P.h * (1 - P.z₁)) = P.z₂ * (P.h * (1 - P.z₁)) := by ring
   have hb : P.z₂ - P.wAut₁ ≤ P.z₂ * (P.h * (1 - P.z₁)) := by
-    have := P.bound_wAut₁; nlinarith
-  calc P.n P.z₁ * (P.z₂ - P.wAut₁) - P.z₂
-      ≤ P.n P.z₁ * (P.z₂ * (P.h * (1 - P.z₁))) - P.z₂ := by nlinarith
-    _ = 0 := by nlinarith [htime]
+    have := P.bound_wAut₁
+    linarith [expand]
+  have step : P.n P.z₁ * (P.z₂ - P.wAut₁) ≤ P.n P.z₁ * (P.z₂ * (P.h * (1 - P.z₁))) :=
+    mul_le_mul_of_nonneg_left hb (le_of_lt hn)
+  have eq0 : P.n P.z₁ * (P.z₂ * (P.h * (1 - P.z₁))) = P.z₂ := by
+    linear_combination P.z₂ * htime
+  linarith
 
 /-- A two-layer human firm with a type-2 solver and type-1 workers cannot earn a positive profit.
 This is the same inequality as `no_positive_profit_tA₁`, and it is what pins the automated type's
@@ -193,3 +212,17 @@ theorem no_positive_profit_same_type {z w : ℝ} (hz : z < 1) (hzw : z ≤ w) (h
 end Params
 
 end IdeTalamas
+
+/-! ### Audit: every theorem above must rest only on Lean's three standard axioms
+(`propext`, `Classical.choice`, `Quot.sound`).  Any occurrence of `sorryAx` would show up here. -/
+
+#print axioms IdeTalamas.Params.span_strict_anti
+#print axioms IdeTalamas.Params.bottom_gains_iff
+#print axioms IdeTalamas.Params.share_identity
+#print axioms IdeTalamas.Params.top_loses
+#print axioms IdeTalamas.Params.no_positive_profit_tA₁
+#print axioms IdeTalamas.Params.no_positive_profit_21
+#print axioms IdeTalamas.Params.no_positive_profit_bA₃
+#print axioms IdeTalamas.Params.no_positive_profit_31
+#print axioms IdeTalamas.Params.no_positive_profit_one_layer
+#print axioms IdeTalamas.Params.no_positive_profit_same_type
