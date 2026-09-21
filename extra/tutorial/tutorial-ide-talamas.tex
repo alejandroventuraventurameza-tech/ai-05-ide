@@ -1,0 +1,223 @@
+% Deep-dive tutorial on Ide & Talamas (2025), built part by part.
+% Compile from this folder with: latexmk -pdf tutorial-ide-talamas.tex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
+
+\newtheorem{proposicion}{Proposición}
+\theoremstyle{definition}
+\newtheorem{definicion}{Definición}
+\newtheorem{ejercicio}{Ejercicio}
+\theoremstyle{remark}
+\newtheorem*{intuicion}{Intuición}
+\newtheorem*{ojo}{Ojo}
+
+\renewcommand{\contentsname}{Contenido}
+\renewcommand{\proofname}{Demostración}
+\renewcommand{\tablename}{Tabla}
+
+% Notation shortcuts
+\newcommand{\zai}{z_{AI}}
+\newcommand{\zt}{\tilde z}
+\newcommand{\W}{\mathcal W}
+\newcommand{\Sset}{\mathcal S}
+\newcommand{\I}{\mathcal I}
+\newcommand{\below}{\preceq}
+
+\title{Inteligencia Artificial en la Economía del Conocimiento\\[4pt]
+\large Tutorial de inmersión profunda en Ide \& Talamàs (2025, \textit{JPE})}
+\author{Alejandro Ventura --- \texttt{ai-05-ide}}
+\date{Fuente: arXiv:2312.05481v11}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+%======================================================================
+\part{La pregunta, el modelo y el mundo sin IA}
+%======================================================================
+
+\section{Cómo leer este tutorial}
+
+El paper tiene una arquitectura muy limpia que conviene tener en la cabeza desde el inicio:
+
+\begin{enumerate}[label=(\arabic*)]
+  \item \textbf{Un modelo de jerarquías de conocimiento} (Garicano, 2000; Fuchs, Garicano y Rayo, 2015): los humanos se organizan en \emph{trabajadores} que hacen el trabajo rutinario y \emph{solucionadores} que resuelven las excepciones.
+  \item \textbf{Un benchmark sin IA} (Proposición~1), que no es nuevo pero es la vara contra la que se mide todo.
+  \item \textbf{La IA como otro ``tipo'' de agente}: compute que se convierte en agentes con conocimiento $\zai$.
+  \item \textbf{Dos dimensiones de la IA}, que es la idea que más nos importa:
+    \begin{itemize}
+      \item \emph{capacidad}: cuánto sabe la IA, $\zai$ (``básica'' si $\zai$ cae donde estaban los trabajadores, ``avanzada'' si cae donde estaban los solucionadores);
+      \item \emph{autonomía}: si la IA puede producir por sí sola (co-trabajador \emph{y} co-piloto) o solo asesorar (co-piloto).
+    \end{itemize}
+  \item \textbf{Dos resultados distributivos}: la Proposición~5 (IA autónoma) y la Proposición~6 (IA no autónoma).
+\end{enumerate}
+
+La trampa de esta semana consiste justamente en colapsar el punto (4) a una sola dimensión. Volveremos a ello en la Parte~IV; por ahora, lo único que necesitas es no olvidar que \textbf{hay dos ejes}.
+
+\section{La pregunta del paper}
+
+\begin{quote}
+\emph{Cuando llega una IA capaz de hacer trabajo intelectual, ¿quiénes ganan y quiénes pierden según cuánto saben, y cómo cambia la respuesta según si la IA puede trabajar por su cuenta o solo aconsejar a humanos?}
+\end{quote}
+
+El \emph{tema} es ``IA y desigualdad''. La \emph{pregunta} es más precisa: el paper quiere saber cómo la IA reordena \emph{quién trabaja con quién} dentro de las organizaciones y cómo eso mueve los salarios a lo largo de toda la distribución de conocimiento. La motivación empírica es una contradicción: algunos estudios encuentran que la IA ayuda sobre todo a los menos calificados (p.\,ej., Brynjolfsson et al., 2025, en atención al cliente) y otros que beneficia más a los más calificados. El paper propone que ambas cosas pueden ser ciertas dependiendo de la capacidad y la autonomía de la IA.
+
+\section{El modelo}
+
+\subsection{Primitivas}
+
+\begin{itemize}
+  \item Una masa unitaria de humanos. Cada uno tiene una unidad de tiempo y un conocimiento $z\in[0,1]$, con distribución $G$ y densidad $g$ continua y \textbf{estrictamente positiva}. El conocimiento es observable.
+  \item Cada oportunidad de producción trae un problema de dificultad $x\sim U[0,1]$. Si quien lo enfrenta sabe más que la dificultad ($z>x$), lo resuelve y produce 1 unidad. Por eso \textbf{$z$ es la probabilidad de resolver un problema por cuenta propia}.
+  \item Las oportunidades de producción son abundantes: el recurso escaso es el tiempo (y, luego, el compute).
+\end{itemize}
+
+\subsection{Organizaciones pre-IA}
+
+\begin{description}
+  \item[Firma de una capa.] Un \emph{productor independiente} con conocimiento $z$ produce, en esperanza, $z$.
+  \item[Firma de dos capas.] Un \emph{solucionador} $s$ y $n$ \emph{trabajadores} con conocimiento $z$. El trabajador intenta el problema; si falla (probabilidad $1-z$), le pregunta al solucionador, y cada pregunta consume $h\in(0,1)$ unidades del tiempo del solucionador, \emph{sepa o no la respuesta}. Si $s>x$, el problema se resuelve.
+\end{description}
+
+La firma de dos capas contrata exactamente los trabajadores necesarios para usar todo el tiempo del solucionador:
+\begin{equation}\label{eq:n}
+  h\, n(z)\,(1-z) = 1 \quad\Longrightarrow\quad n(z)=\frac{1}{h(1-z)} .
+\end{equation}
+
+\begin{intuicion}
+Trabajadores más sabios preguntan menos, así que cada solucionador puede supervisar a más de ellos: $n'(z)>0$. Ese es el canal por el cual \emph{el conocimiento del trabajador libera tiempo del solucionador}.
+\end{intuicion}
+
+La producción esperada de un equipo $(s;z)$ es $n(z)\,s$: cada uno de los $n(z)$ problemas se resuelve si \emph{alguien} del equipo lo sabe, y como el solucionador sabe más que el trabajador, eso ocurre con probabilidad $s$.
+
+\subsection{Beneficios}
+
+Normalizando el precio del producto a 1 y llamando $w(\cdot)$ al salario,
+\begin{align}
+  \Pi_1 &= z - w(z), \label{eq:pi1}\\
+  \Pi_2^{nA}(s,z) &= n(z)\,[\,s-w(z)\,] - w(s), \qquad z\le s. \label{eq:pi2}
+\end{align}
+Las firmas son competitivas y hay libre entrada, así que en equilibrio \emph{todas ganan cero} y ninguna podría ganar algo positivo cambiando de estructura o de contratados.
+
+\subsection{Notación de conjuntos}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+Símbolo & Significado \\ \midrule
+$\W,\ \I,\ \Sset$ & conjuntos de trabajadores, productores independientes y solucionadores humanos \\
+$m(z)$ & conocimiento del solucionador asignado al trabajador $z$ (\emph{matching}) \\
+$e(s)=m^{-1}(s)$ & conocimiento del trabajador asignado al solucionador $s$ (\emph{employee function}) \\
+$B\below B'$ & ``$B$ está por debajo de $B'$'': $\sup B\le\inf B'$ \\
+$\zt$ & frontera trabajador/solucionador pre-IA (cuando $\I=\emptyset$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{El benchmark sin IA (Proposición 1)}
+
+\begin{proposicion}[Ide y Talamàs, Prop.~1; Fuchs et al., 2015]
+Sin IA existe un único equilibrio, que es eficiente y tiene:
+\begin{itemize}
+  \item estratificación ocupacional: $\W\below\I\below\Sset$;
+  \item emparejamiento positivo (PAM): $m$ es estrictamente creciente;
+  \item $\W\neq\emptyset$ y $\Sset\neq\emptyset$; además, $\I\neq\emptyset$ si y solo si $h>h_0\in(0,1)$.
+\end{itemize}
+El salario $w$ es continuo, estrictamente creciente y convexo, con
+\[
+  w(z)=m(z)-\frac{w(m(z))}{n(z)}\ (z\in\W),\qquad
+  w(z)=z\ (z\in\I),\qquad
+  w(z)=C+\int_{\inf\Sset}^{z} n(e(u))\,du\ (z\in\Sset).
+\]
+\end{proposicion}
+
+En todo el paper se asume $h<h_0$, es decir, \textbf{sin productores independientes antes de la IA}. Entonces $\W=[0,\zt]$ y $\Sset=[\zt,1]$.
+
+\subsection{De dónde sale cada pieza}
+
+\paragraph{(a) Salario de los solucionadores: una condición de primer orden.}
+Una firma que ya contrató $n(z)$ trabajadores $z$ elige a su solucionador:
+\[
+  \max_{s\in\Sset}\ n(z)\,[\,s-w(z)\,]-w(s).
+\]
+La CPO en $s=m(z)$ es $w'(m(z))=n(z)$. Es decir, \textbf{el salario marginal de un solucionador es el tamaño de su equipo}: un poco más de conocimiento en el solucionador sube la probabilidad de éxito en \emph{cada uno} de sus $n(z)$ problemas. Escrito en términos del solucionador, $w'(s)=n(e(s))$, e integrando se obtiene la fórmula de la proposición.
+
+\paragraph{(b) Salario de los trabajadores: beneficio cero.}
+Con $\Pi_2^{nA}=0$ y $s=m(z)$ se despeja $w(z)=m(z)-w(m(z))/n(z)$. El trabajador se queda con \emph{lo que sobra} de su producción por cabeza, $m(z)$, una vez que se paga la parte que le toca del salario del jefe, $w(m(z))/n(z)$.
+
+\paragraph{(c) Restricción de recursos del matching.}
+El tiempo que piden los trabajadores en $[0,z]$ debe ser igual a la masa de solucionadores que los atienden:
+\begin{equation}\label{eq:resource}
+  \int_0^{z} h(1-u)\,dG(u) = G(m(z))-G(\zt).
+\end{equation}
+Derivando respecto a $z$: $h(1-z)\,g(z)=g(m(z))\,m'(z)$.
+
+\paragraph{(d) La constante $C$: continuidad.}
+$C=w(\zt)$ se fija para que el salario sea continuo en la frontera $\zt$ (si hubiera un salto, las firmas contratarían del lado barato). Con $h<h_0$ se cumple $C>\zt$: el solucionador marginal gana más que lo que produciría solo.
+
+\subsection{Una identidad útil}
+
+Combinando (a) y (c):
+\begin{equation}\label{eq:key}
+  \frac{d}{dz}\,w(m(z)) = w'(m(z))\,m'(z)= n(z)\cdot\frac{h(1-z)\,g(z)}{g(m(z))}=\frac{g(z)}{g(m(z))}.
+\end{equation}
+Con conocimiento uniforme, \textbf{el salario del jefe de $z$ sube uno a uno con $z$}: $w(m(z))=C+z$.
+
+\subsection{Ejemplo resuelto: $G$ uniforme y $h=1/2$}
+
+Este es exactamente el caso de las figuras del paper.
+
+\begin{enumerate}[label=\textbf{Paso \arabic*.}, leftmargin=*]
+  \item \emph{Matching.} Con $g\equiv1$, \eqref{eq:resource} da $m(z)=\zt+h\left(z-\tfrac{z^2}{2}\right)$.
+  \item \emph{Frontera.} El trabajador más sabio va con el solucionador más sabio: $m(\zt)=1$, o sea
+  \[
+    \zt+h\Big(\zt-\frac{\zt^{2}}{2}\Big)=1 \ \stackrel{h=1/2}{\Longrightarrow}\ \zt^{2}-6\zt+4=0\ \Longrightarrow\ \zt=3-\sqrt5\approx0.764 .
+  \]
+  \item \emph{Salario del solucionador más sabio.} Por \eqref{eq:key}, $w(1)=w(m(\zt))=C+\zt$.
+  \item \emph{Continuidad en $\zt$.} Por (b) en $z=\zt$: $C=w(\zt)=1-w(1)\,h(1-\zt)=1-(C+\zt)\,h(1-\zt)$, de donde
+  \[
+    C=\frac{1-\zt\,h(1-\zt)}{1+h(1-\zt)}\approx0.814 .
+  \]
+  \item \emph{Salarios.} Para $z\in\W$: $w(z)=m(z)-(C+z)\,h(1-z)$. En particular,
+  \[
+    \boxed{\,w(0)=\zt-hC\approx0.357,\qquad w(1)=C+\zt\approx1.578\,}
+  \]
+  que coinciden con los valores $0.36$ y $1.58$ de la Figura~3(a) del paper.
+\end{enumerate}
+
+\begin{ojo}
+El número $w(0)\approx0.357$ va a reaparecer: en la Proposición~6, una IA \emph{no autónoma} se usa si y solo si $\zai>w(0)$. Que este número se pueda calcular a mano es lo que lo vuelve un buen candidato para la derivación manuscrita y para Lean.
+\end{ojo}
+
+\subsection{Dos lecturas económicas que usaremos después}
+
+\begin{enumerate}
+  \item \textbf{Efecto \emph{match}.} El salario de un trabajador depende de con quién lo emparejan: su productividad es $m(z)$. Si la IA le asigna un jefe peor, su salario tiende a caer.
+  \item \textbf{Efecto \emph{share}.} Dado el equipo, la producción se reparte según las escaseces relativas: el trabajador recibe $m(z)-w(m(z))/n(z)$. Si el salario del jefe cae (por ejemplo, porque ahora compite con la IA), el trabajador se queda con una tajada mayor.
+\end{enumerate}
+
+Toda la Proposición~5 es una pelea entre estos dos efectos.
+
+\begin{ejercicio}
+Verifica que $w(z)=m(z)-(C+z)h(1-z)$ es creciente en $[0,\zt]$ cuando $h=1/2$. ¿Qué parte del argumento usa que $g$ sea uniforme?
+\end{ejercicio}
+
+\begin{ejercicio}
+Muestra que el valor marginal del conocimiento de un trabajador es menor que 1 (su conocimiento solo ``libera'' tiempo del jefe), mientras que el de un solucionador es $n(e(s))>1$. ¿Por qué esto implica $\W\below\Sset$?
+\end{ejercicio}
+
+%======================================================================
+% Part II (autonomous AI: Props. 2-4), Part III (Prop. 5),
+% Part IV (non-autonomous AI: Prop. 6 and the trap) will be added next.
+%======================================================================
+
+\end{document}
