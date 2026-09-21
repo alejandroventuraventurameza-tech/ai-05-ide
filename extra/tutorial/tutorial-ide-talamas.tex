@@ -403,7 +403,192 @@ Muestra que $w^{*}(1)=1/h$ para cualquier $\zai$ en el caso en que la IA se usa 
 \end{ejercicio}
 
 %======================================================================
-% Part III (Prop. 5) and Part IV (non-autonomous AI: Prop. 6 and the trap) come next.
+\part{Proposición 5: ¿quién gana con la IA autónoma?}
+%======================================================================
+
+\section{El enunciado}
+
+Definimos los ganadores por debajo y por encima de $\zai$:
+\[
+  B\equiv\{z\in[0,\zai] : w^{*}(z)>w(z)\},\qquad T\equiv\{z\in[\zai,1] : w^{*}(z)>w(z)\}.
+\]
+El paper muestra (apéndice online) que $B=[0,z_b)$ y $T=(z_t,1]$: \textbf{los ganadores están siempre en
+los extremos}. Por eso basta mirar a $z=0$ y $z=1$.
+
+\begin{proposicion}[Prop.~5]
+Hay ganadores abajo si la IA es lo bastante buena: $B\neq\emptyset$ si y solo si $\zai>\bar z_{AI}$, con
+$\bar z_{AI}\in\text{int}\,\W$. En cambio, siempre hay ganadores arriba: $T\neq\emptyset$ para todo
+$\zai\in[0,1)$.
+\end{proposicion}
+
+\section{Los dos efectos}
+
+Para cualquier $z$, el salario se puede leer como ``con quién trabajo'' por ``cuánto me llevo'':
+\[
+  w(z)=\underbrace{m(z)}_{\text{efecto \emph{match}}}-\underbrace{\frac{w(m(z))}{n(z)}}_{\text{efecto \emph{share}}}.
+\]
+
+\paragraph{Abajo ($z=0$), con IA básica.}
+\begin{itemize}
+  \item \emph{Match} negativo: por la Proposición~4, el jefe del trabajador menos sabio empeora
+  ($m^{*}(0)<m(0)$), porque entraron solucionadores nuevos menos sabios.
+  \item \emph{Share} positivo: pre-IA el solucionador marginal cobraba una renta ($C>\inf\Sset$);
+  post-IA cobra exactamente lo que produciría solo ($C^{*}=\inf\Sset_p^{*}$), porque compite con la IA.
+  Esa renta que pierde el jefe se la queda el trabajador.
+\end{itemize}
+El signo neto depende de $\zai$, y ahí aparece el umbral.
+
+\paragraph{Arriba ($z=1$).}
+También hay un efecto \emph{match} negativo (el humano más sabio termina supervisando agentes de IA, que
+saben menos que los humanos que supervisaba antes) y uno \emph{share} positivo. Pero el positivo
+\textbf{siempre} gana, y la razón es el tamaño del equipo: como $h<h_0$, cada solucionador supervisa
+muchos trabajadores, así que una caída pequeña en el salario de cada trabajador se multiplica por
+$n(\cdot)$ en el bolsillo del jefe.
+
+\section{El umbral, en forma cerrada}
+
+Aquí es donde nuestro ejemplo uniforme paga. Recuerda de la Parte~II que, cuando la IA es lo bastante
+buena como para usarse \emph{también como solucionadora}, los humanos menos sabios trabajan bajo un jefe
+de IA y su salario es
+\[
+  w^{*}(0)=\zai\Big(1-\frac{1}{n(0)}\Big)=\zai\,(1-h).
+\]
+Como el salario pre-IA del mismo individuo es $w(0)$, hay ganadores abajo si y solo si
+\begin{equation}\label{eq:zbar}
+  \boxed{\ \zai>\bar z_{AI}=\frac{w(0)}{1-h}\ }
+\end{equation}
+Con $G$ uniforme y $h=1/2$: $w(0)\approx0.357$, así que $\bar z_{AI}\approx0.714$, que en efecto está
+dentro de $\W=[0,\ 0.764]$, tal como exige la proposición.
+
+\begin{ojo}
+El umbral \eqref{eq:zbar} vale en el régimen en que la IA es solucionadora de los de abajo. Nuestras
+simulaciones (\texttt{code/equilibrium.py}) muestran que ese régimen empieza en $\zai=2/3$, y $2/3<0.714$,
+así que el umbral cae efectivamente dentro de ese régimen. Curiosamente, el valor $2/3$ aparece para
+todo $h$ que probamos ($h=0.2,\dots,0.74$) con $G$ uniforme: es una conjetura que vale la pena demostrar
+(y un buen candidato para Lean).
+\end{ojo}
+
+\paragraph{Arriba, también en forma cerrada.} Si la IA se usa como trabajadora, el humano más sabio
+supervisa agentes de IA y cobra
+\[
+  w^{*}(1)=n(\zai)\,(1-\zai)=\frac{1}{h},
+\]
+\textbf{independientemente de $\zai$}. Con $h=1/2$ eso da $2$, contra $w(1)\approx1.578$ pre-IA. El de
+arriba gana siempre, y gana lo mismo con una IA mediocre que con una casi perfecta.
+
+\section{Tabla de resultados (uniforme, $h=1/2$)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+$\zai$ & configuración & $w^{*}(0)$ & $w^{*}(1)$ & ¿ganan abajo? \\ \midrule
+0.425 & IA solo trabajadora   & 0.267 & 2.000 & no \\
+0.600 & IA solo trabajadora   & 0.319 & 2.000 & no \\
+0.700 & IA también solucionadora & 0.350 & 2.000 & no \\
+0.720 & IA también solucionadora & 0.360 & 2.000 & sí \\
+0.850 & IA también solucionadora & 0.425 & 2.000 & sí \\ \bottomrule
+\end{tabular}
+\caption{Referencia pre-IA: $w(0)\approx0.357$, $w(1)\approx1.578$. Los valores $0.267$, $0.425$ y $2$
+coinciden con las Figuras 4 y 5 del paper.}
+\end{table}
+
+%======================================================================
+\part{Proposición 6 y la trampa: ¿autonomía o capacidad?}
+%======================================================================
+
+\section{IA no autónoma: el modelo cambia en un solo supuesto}
+
+Ahora los agentes de IA solo pueden aconsejar: son co-pilotos, no co-trabajadores. Las consecuencias
+son inmediatas:
+
+\begin{enumerate}[label=(\roman*)]
+  \item Las firmas de una capa automatizadas y las ``bottom-automatizadas'' desaparecen: sin capacidad de
+  producir, esos arreglos no generan nada. Quedan tres configuraciones.
+  \item Parte del compute queda \emph{ocioso}, así que su precio cae a cero: $r^{\star}=0$.
+  \item La IA deja de ser sustituto perfecto del humano $\zai$, así que $w^{\star}(\zai)\neq r^{\star}$.
+  El humano $\zai$ ya no queda clavado sobre la recta de 45°.
+\end{enumerate}
+
+\paragraph{El salario de los de abajo, en una línea.} Una firma con un solucionador de IA (gratis) y
+$n(z)$ trabajadores humanos gana cero:
+\[
+  n(z)\,[\zai-w^{\star}(z)]-\underbrace{r^{\star}}_{=0}=0\quad\Longrightarrow\quad
+  \boxed{\,w^{\star}(z)=\zai\ \text{ para todo } z\in\W_a^{\star}\,}
+\]
+El salario es \emph{constante e igual a la capacidad de la IA}: el trabajador se queda con todo el
+producto esperado del equipo, porque el otro insumo no cuesta nada. Compáralo con el caso autónomo,
+donde el mismo trabajador cobraba $\zai(1-h)$: la diferencia es exactamente el costo de oportunidad de
+la IA, que con autonomía es positivo ($r^{*}=\zai$) y sin autonomía es cero.
+
+\begin{proposicion}[Prop.~6]
+Con IA no autónoma el equilibrio es único, eficiente, maximiza el ingreso laboral y $r^{\star}=0$. Además:
+\begin{itemize}
+  \item si $\zai\le w(0)$, la IA \textbf{no se usa} y todo queda como antes;
+  \item si $\zai>w(0)$, solo los menos sabios la usan como solucionadora.
+\end{itemize}
+En todo caso: (1) el producto total es mayor con IA autónoma; (2) la IA no autónoma crea perdedores;
+(3) los menos sabios prefieren la IA no autónoma a cualquiera de las otras dos situaciones; (4) los más
+sabios prefieren la IA autónoma.
+\end{proposicion}
+
+\paragraph{De dónde sale $\zai>w(0)$.} Trivial con la fórmula anterior: el trabajador menos sabio acepta
+trabajar bajo un jefe de IA solo si eso le paga más que su salario pre-IA, es decir si $\zai>w(0)$. Con
+$h=1/2$ uniforme, el umbral es $0.357$.
+
+\section{La trampa de la semana}
+
+La frase de una línea que circula sobre este paper es: \emph{``el efecto distributivo lo determina la
+autonomía de la IA, no su capacidad''}. Contrastémosla con las Proposiciones 5 y 6.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+ & \textbf{IA autónoma} & \textbf{IA no autónoma} \\ \midrule
+Precio del compute & $r^{*}=\zai$ & $r^{\star}=0$ \\
+Salario de los de abajo & $\zai(1-h)$ (si la IA los supervisa) & $\zai$ (si la usa) \\
+¿Ganadores abajo? & sí $\iff \zai>\dfrac{w(0)}{1-h}$ & sí $\iff \zai>w(0)$ \\[6pt]
+Umbral con $h=1/2$ uniforme & $0.714$ & $0.357$ \\
+¿Ganadores arriba? & siempre & no necesariamente \\
+Producto total & mayor & menor \\ \bottomrule
+\end{tabular}
+\caption{Las dos dimensiones: capacidad ($\zai$) y autonomía.}
+\end{table}
+
+\paragraph{La respuesta.} \textbf{La condición para que haya ganadores abajo es de capacidad, no de
+autonomía}: en los dos regímenes es un umbral sobre $\zai$. Lo que hace la autonomía es \emph{mover el
+umbral} y \emph{escalar la ganancia}:
+\[
+  \bar z_{AI}^{\text{autónoma}}=\frac{w(0)}{1-h}
+  =\frac{1}{1-h}\cdot \bar z_{AI}^{\text{no autónoma}} .
+\]
+Con $h=1/2$ el umbral se duplica. Dicho de otro modo: quitar autonomía no crea ganadores abajo por sí
+solo (si $\zai\le w(0)$ la IA ni siquiera se usa y no cambia nada), y poner autonomía no los elimina por
+sí sola (si $\zai>0.714$ los de abajo ganan igual). Lo correcto es:
+
+\begin{quote}
+\emph{Si hay ganadores abajo depende de la capacidad; cuánto ganan y quién gana arriba depende de la
+autonomía.}
+\end{quote}
+
+\paragraph{Dónde sí manda la autonomía.} En tres cosas: (i) el producto total, siempre mayor con IA
+autónoma; (ii) los más sabios, que siempre prefieren la autónoma; y (iii) el tamaño de la ganancia
+abajo, donde el factor $1-h$ es el costo de oportunidad de la IA. De ahí el \emph{tradeoff} regulatorio
+del paper: restringir la autonomía redistribuye hacia abajo, pero reduce el producto.
+
+\begin{ejercicio}
+Con $h=1/2$ uniforme y $\zai=0.5$: ¿ganan o pierden los de abajo con IA autónoma? ¿Y con IA no autónoma?
+Usa $w(0)=0.357$, $w^{*}(0)$ de la tabla de la Parte~III y $w^{\star}(0)=\zai$.
+\end{ejercicio}
+
+\begin{ejercicio}
+Muestra que el cociente entre los dos umbrales es $1/(1-h)$ y explica en palabras por qué el costo de
+oportunidad de la IA aparece ahí.
+\end{ejercicio}
+
+%======================================================================
+% Next: discrete two/three-type version for the hand derivation (Prop. 5) and Part IV (non-autonomous AI: Prop. 6 and the trap) come next.
 %======================================================================
 
 \end{document}
