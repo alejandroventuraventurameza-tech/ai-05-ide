@@ -40,3 +40,6 @@ DNI*
 
 # Original prompt kept at repo root untracked (tracked copy lives in extra/)
 /Prompt 01*.docx
+
+# latexmk scratch
+*.tmp
