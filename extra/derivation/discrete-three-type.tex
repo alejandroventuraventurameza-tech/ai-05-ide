@@ -1,0 +1,435 @@
+% Discrete three-type version of Ide & Talamas (2025), stated and proved in full.
+% No numerical examples: every claim is a theorem about the primitives.
+% Compile with: latexmk -pdf discrete-three-type.tex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumitem}
+
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}
+\newtheorem{lema}{Lema}
+\newtheorem{corolario}{Corolario}
+\theoremstyle{definition}
+\newtheorem{definicion}{Definición}
+\theoremstyle{remark}
+\newtheorem*{intuicion}{Intuición}
+\newtheorem*{obs}{Observación}
+\renewcommand{\proofname}{Demostración}
+
+\newcommand{\ai}{a}
+\newcommand{\N}{\mathsf{N}}
+\newcommand{\Z}{\mathsf{Z}}
+\newcommand{\Mk}{\mathsf{M}}
+
+\title{Versión discreta de tres tipos\\[4pt]
+\large Ide \& Talamàs (2025): las Proposiciones 5 y 6 demostradas con tipos finitos}
+\author{Alejandro Ventura --- \texttt{ai-05-ide}}
+\date{Fuente: arXiv:2312.05481v11}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Construimos una versión de tipos finitos del modelo de Ide y Talamàs (2025) y demostramos, sin
+ejemplos numéricos y sin condiciones auxiliares sobre los primitivos, que: (i) los salarios de
+equilibrio son únicos y vienen dados por un máximo sobre configuraciones de firma; (ii) hay ganadores
+en el fondo de la distribución si y solo si la capacidad de la IA supera un umbral explícito;
+(iii) ese umbral es estrictamente mayor con IA autónoma que sin autonomía, en un factor igual al
+inverso del costo de oportunidad de la IA; y (iv) los más conocedores prefieren siempre la IA
+autónoma, pero pierden respecto del mundo sin IA. El punto (iv) es donde la versión discreta se
+separa del paper, y demostramos exactamente por qué.
+\end{abstract}
+
+\section{Entorno}
+
+\paragraph{Primitivas.} Tres tipos de humanos con conocimiento $z_1<z_2<z_3$ en $[0,1)$ y masas
+$\mu_1,\mu_2,\mu_3>0$. Cada humano tiene una unidad de tiempo. Cada oportunidad de producción trae un
+problema de dificultad $x\sim U[0,1]$: quien lo enfrenta produce una unidad si su conocimiento excede
+$x$. Las oportunidades son abundantes. Cada consulta consume $h\in(0,1)$ unidades del tiempo del
+solucionador, de modo que una firma de dos capas con trabajadores de conocimiento $z$ contrata
+\[
+  n(z)=\frac{1}{h(1-z)}>1
+\]
+de ellos por solucionador. Escribimos $n_i\equiv n(z_i)$ y $n_a\equiv n(\ai)$. La IA convierte compute
+en agentes de capacidad $\ai\in[0,z_3)$, sustitutos perfectos de un humano con ese conocimiento; el
+stock de compute es $\mu$ y su alquiler es $r$. El precio del producto está normalizado a 1.
+
+\paragraph{Configuraciones de firma.} Con tres tipos y una IA el conjunto de configuraciones es
+finito. Sus beneficios son
+\begin{align*}
+  \Pi^{1}_i &= z_i-w_i, &&\text{una capa, humano } i;\\
+  \Pi^{2}_{i,j} &= n_j\,[z_i-w_j]-w_i, &&\text{solucionador } i,\ \text{trabajadores } j,\ z_j\le z_i;\\
+  \Pi^{1}_{AI} &= \ai-r, &&\text{una capa, IA};\\
+  \Pi^{tA}_{j} &= n_j\,[\ai-w_j]-r, &&\text{solucionador IA, trabajadores } j,\ z_j\le \ai;\\
+  \Pi^{bA}_{i} &= n_a\,[z_i-r]-w_i, &&\text{solucionador } i,\ \text{trabajadores IA},\ z_i\ge \ai.
+\end{align*}
+Cuando la IA es \emph{no autónoma} no puede perseguir oportunidades de producción, de modo que
+$\Pi^{1}_{AI}$ y $\Pi^{bA}_{i}$ desaparecen del conjunto admisible.
+
+\begin{definicion}[Equilibrio competitivo]\label{def:eq}
+Un equilibrio es un vector $(w_1,w_2,w_3)\in\mathbb R_{\ge0}^{3}$, un alquiler $r\ge0$ y una
+asignación de los humanos y del compute a configuraciones admisibles tales que
+\begin{description}[leftmargin=3em]
+  \item[$(\N)$] ninguna configuración admisible tiene beneficio estrictamente positivo;
+  \item[$(\Z)$] toda configuración usada en la asignación tiene beneficio exactamente cero;
+  \item[$(\Mk)$] todos los humanos están empleados, el compute usado no excede $\mu$ y, si queda
+  compute ocioso, $r=0$.
+\end{description}
+\end{definicion}
+
+\begin{lema}[las configuraciones puras bastan]\label{lem:puras}
+Considérese una firma de dos capas cuyo solucionador ---humano del tipo $i$ o agente de IA--- dedica
+una fracción $t_j\ge0$ de su tiempo a supervisar trabajadores del tipo $j$, con $\sum_j t_j\le1$, y
+emplea el tiempo restante en producir por su cuenta. Su beneficio no excede al máximo de los
+beneficios de las configuraciones puras listadas arriba. En consecuencia, si ninguna configuración
+pura tiene beneficio positivo, tampoco lo tiene ninguna firma mixta.
+\end{lema}
+\begin{proof}
+Un trabajador del tipo $j$ consume $h(1-z_j)=1/n_j$ unidades del tiempo del solucionador, así que con
+una fracción $t_j$ de tiempo este supervisa $t_j n_j$ trabajadores de ese tipo. El beneficio de una
+firma con solucionador humano del tipo $i$ es entonces
+\[
+  \Pi(t)=\sum_j t_j\,n_j\,[z_i-w_j]+\Big(1-\sum_j t_j\Big)z_i-w_i ,
+\]
+y el de una firma con solucionador de IA,
+$\Pi(t)=\sum_j t_j\,n_j\,[\ai-w_j]+\big(1-\sum_j t_j\big)\ai-r$. En ambos casos $\Pi$ es afín en
+$t$ sobre el politopo compacto y convexo $\Delta=\{t\ge0:\ \sum_j t_j\le1\}$, de modo que alcanza su
+máximo en un punto extremo. Los puntos extremos de $\Delta$ son el origen y los vectores unitarios
+$e_j$: el origen da $\Pi^{1}_i$ (o $\Pi^{1}_{AI}$) y $e_j$ da $\Pi^{2}_{i,j}$ (o $\Pi^{tA}_{j}$).
+Las firmas que mezclan trabajadores humanos con agentes de IA se tratan igual, añadiendo una
+coordenada cuyo vértice es $\Pi^{bA}_{i}$.
+\end{proof}
+
+\begin{intuicion}
+Mezclar no sirve porque el único recurso escaso de la firma es el tiempo del solucionador, y cada
+tipo de trabajador le rinde un excedente \emph{por unidad de tiempo} constante: conviene dedicar todo
+el tiempo al mejor de ellos. Esto es lo que permite enumerar un conjunto finito de configuraciones sin
+pérdida de generalidad; sin este lema, la condición $(\N)$ verificaría solo una parte de las
+desviaciones posibles.
+\end{intuicion}
+
+\paragraph{Supuestos.} Escribimos $\bar z\equiv\dfrac{z_1}{1-h(1-z_1)}$, bien definido porque
+$h(1-z_1)<1$.
+\begin{description}[leftmargin=3em]
+  \item[(A0)] $z_1\le \ai<z_3$;
+  \item[(A1)] $\mu_1>n_1(\mu_2+\mu_3)$;
+  \item[(A2)] $\mu_2>n_2\,\mu_3$;
+  \item[(A3)] $\mu>\dfrac{\mu_1}{n_1}+\dfrac{\mu_2}{n_2}+n_a(\mu_2+\mu_3)$.
+\end{description}
+
+\begin{intuicion}
+(A0) dice que la IA es al menos tan capaz como el tipo menos conocedor y no alcanza al más
+conocedor; sin la primera mitad, el tipo 1 podría supervisar agentes de IA y la configuración
+$\Pi^{bA}_{1}$ entraría en escena. (A1) y (A2) dicen que cada tipo es demasiado numeroso para caber entero bajo los solucionadores
+humanos que están por encima de él: siempre sobra gente del tipo 1 y del tipo 2. (A3) dice que el
+compute alcanza para todos los usos posibles y todavía sobra. Son los análogos discretos de dos
+supuestos del paper: que existen productores independientes y que el compute es abundante respecto
+del tiempo humano.
+\end{intuicion}
+
+\section{Cuatro lemas}
+
+\begin{lema}[cotas inferiores]\label{lem:cotas}
+En cualquier equilibrio, para todo $i$ y todo $j$ con $z_j\le z_i$:
+\[
+  w_i\ge z_i,\qquad w_i\ge n_j\,(z_i-w_j),\qquad
+  w_j\ge \ai-\frac{r}{n_j}\ \ (z_j\le \ai),\qquad
+  w_i\ge n_a\,(z_i-r)\ \ (z_i\ge \ai),
+\]
+donde las dos últimas solo aplican cuando la configuración correspondiente es admisible.
+\end{lema}
+\begin{proof}
+Son las cuatro desigualdades $\Pi^{1}_i\le0$, $\Pi^{2}_{i,j}\le0$, $\Pi^{tA}_j\le0$ y
+$\Pi^{bA}_i\le0$ de la condición $(\N)$, despejando el salario.
+\end{proof}
+
+\begin{lema}[el salario es un valor alcanzado]\label{lem:alcanzado}
+En cualquier equilibrio, el salario de cada tipo coincide con el valor de cero beneficio de alguna
+configuración admisible que lo emplea.
+\end{lema}
+\begin{proof}
+Por $(\Mk)$ cada tipo está empleado en alguna configuración de la asignación; por $(\Z)$ esa
+configuración tiene beneficio cero; despejando el salario del tipo en cuestión se obtiene el valor
+afirmado.
+\end{proof}
+
+\begin{lema}[las masas excluyen una rama]\label{lem:masas}
+Bajo (A1) ningún equilibrio tiene a todos los individuos del tipo 1 empleados como trabajadores de
+solucionadores humanos. Bajo (A2) ocurre lo mismo con el tipo 2 respecto de los solucionadores del
+tipo 3. Además, en ningún equilibrio el tipo 3 es trabajador.
+\end{lema}
+\begin{proof}
+La capacidad total de los solucionadores humanos por encima del tipo 1 es $n_1(\mu_2+\mu_3)<\mu_1$ por
+(A1), y la de los del tipo 3 sobre trabajadores del tipo 2 es $n_2\mu_3<\mu_2$ por (A2); en ambos
+casos no alcanza para emplear a toda la masa. Para la última afirmación: el único solucionador
+admisible para trabajadores del tipo 3 es el propio tipo 3, y $\Pi^{2}_{3,3}=0$ daría
+$w_3=n_3 z_3/(1+n_3)<z_3$, contradiciendo $w_3\ge z_3$ del Lema~\ref{lem:cotas}.
+\end{proof}
+
+\begin{lema}[monotonía del excedente del solucionador]\label{lem:phi}
+Sea $s\in[0,1)$ y $\varphi(x)\equiv n(x)\,(s-x)=\dfrac{s-x}{h(1-x)}$ para $x\in[0,s]$. Entonces
+$\varphi$ es estrictamente decreciente.
+\end{lema}
+\begin{proof}
+$\varphi(x)=\frac1h\cdot\frac{s-x}{1-x}$ y
+$\frac{d}{dx}\frac{s-x}{1-x}=\frac{-(1-x)+(s-x)}{(1-x)^{2}}=\frac{s-1}{(1-x)^{2}}<0$ porque $s<1$.
+\end{proof}
+
+\begin{intuicion}
+Un solucionador que contrata trabajadores pagándoles su producto individual prefiere trabajadores
+\emph{menos} conocedores: al subir el conocimiento del trabajador en $dx$, el excedente por
+trabajador cae uno a uno, mientras que el tamaño del equipo solo crece en la proporción $h\,dx$ del
+tiempo liberado. Con $h<1$ el primer efecto domina. Este lema es el que decide qué pasa con los más
+conocedores.
+\end{intuicion}
+
+\begin{lema}[asignación factible]\label{lem:asignacion}
+Sea $(w_1,w_2,w_3)$ y $r$ el vector de precios de cualquiera de los Teoremas \ref{th:pre},
+\ref{th:aut} o \ref{th:na}. Bajo (A0)--(A3) existe una asignación que satisface $(\Mk)$ y en la que
+toda configuración usada tiene beneficio cero.
+\end{lema}
+\begin{proof}
+Asignamos de arriba hacia abajo. En cada paso, ``la configuración que alcanza $w_i$'' significa una
+cualquiera de las que realizan el máximo que define $w_i$; existe porque el máximo es sobre un
+conjunto finito no vacío, y tiene beneficio cero precisamente por realizarlo.
+\begin{enumerate}[label=(\arabic*),leftmargin=2.4em]
+  \item \emph{Tipo 3.} Se asigna íntegramente a la configuración que alcanza $w_3$. Esta demanda a lo
+  más $n_1\mu_3$ trabajadores del tipo 1, o $n_2\mu_3$ del tipo 2, o $n_a\mu_3$ unidades de compute,
+  según cuál sea.
+  \item \emph{Tipo 2.} La masa demandada por el paso anterior es a lo más $n_2\mu_3<\mu_2$ por (A2),
+  así que está disponible; esos individuos quedan empleados como trabajadores, con beneficio cero por
+  la definición de $w_3$. El resto se asigna a la configuración que alcanza $w_2$, que demanda a lo
+  más $n_1\mu_2$ trabajadores del tipo 1 si es la de supervisar al tipo 1, y ninguno en los demás
+  casos.
+  \item \emph{Tipo 1.} La demanda acumulada sobre él es a lo más $n_1(\mu_2+\mu_3)<\mu_1$ por (A1), de
+  modo que está disponible, y esas firmas tienen beneficio cero por la definición de $w_2$ y $w_3$.
+  Los individuos restantes se asignan a la configuración que alcanza $w_1$: producir por su cuenta si
+  $w_1=z_1$, o trabajar bajo un solucionador de IA si el máximo se realiza en esa rama. Esta última no
+  está limitada por masas humanas sino por compute.
+  \item \emph{Compute.} La demanda total de compute es a lo más $\mu_1/n_1+\mu_2/n_2$ en
+  solucionadores de IA más $n_a(\mu_2+\mu_3)$ en trabajadores de IA, cantidad menor que $\mu$ por
+  (A3). En el escenario autónomo el compute sobrante se emplea en firmas automatizadas de una capa,
+  que con $r=\ai$ ganan cero; no queda compute ocioso y la cláusula final de $(\Mk)$ no se activa. En
+  el escenario no autónomo ese compute no puede producir nada, queda ocioso y $(\Mk)$ exige $r=0$, que
+  es el valor usado en el Teorema \ref{th:na}.
+\end{enumerate}
+Todos los humanos quedan empleados y toda configuración usada realiza el máximo que define el salario
+del tipo asignado a ella, luego tiene beneficio cero. \qedhere
+\end{proof}
+
+\section{Los tres equilibrios}
+
+\begin{teorema}[equilibrio sin IA]\label{th:pre}
+Bajo (A1) y (A2) existe un equilibrio sin IA y los salarios son únicos:
+\[
+  w_1=z_1,\qquad
+  w_2=\max\{z_2,\ n_1(z_2-z_1)\},\qquad
+  w_3=\max\{z_3,\ n_1(z_3-z_1),\ n_2(z_3-w_2)\}.
+\]
+\end{teorema}
+
+\begin{proof}
+\emph{Unicidad.} Por el Lema~\ref{lem:alcanzado}, $w_1$ es el valor de cero beneficio de una
+configuración que emplea al tipo 1: producir solo ($w_1=z_1$) o ser trabajador de un solucionador
+$i\in\{2,3\}$ ($w_1=z_i-w_i/n_1$). Si $w_1>z_1$, entonces $\Pi^{1}_1<0$, así que ningún individuo del
+tipo 1 produce solo y todos son trabajadores de solucionadores humanos, lo que contradice el
+Lema~\ref{lem:masas}. Luego $w_1=z_1$. Para el tipo 2, el Lema~\ref{lem:alcanzado} deja las opciones
+$w_2=z_2$, $w_2=n_1(z_2-w_1)=n_1(z_2-z_1)$ y $w_2=z_3-w_3/n_2$; la tercera exigiría que todo el tipo 2
+fuese trabajador del tipo 3, excluido por el Lema~\ref{lem:masas}. Por el Lema~\ref{lem:cotas},
+$w_2\ge z_2$ y $w_2\ge n_1(z_2-z_1)$, luego $w_2$ es el máximo de ambos. Para el tipo 3, el
+Lema~\ref{lem:masas} dice que no es trabajador, así que las opciones son $w_3=z_3$,
+$w_3=n_1(z_3-w_1)$ y $w_3=n_2(z_3-w_2)$; el Lema~\ref{lem:cotas} acota $w_3$ por cada una, luego es su
+máximo.
+
+\emph{Existencia.} La asignación del Lema \ref{lem:asignacion} satisface $(\Mk)$ con beneficio cero
+en las configuraciones usadas. La condición $(\N)$ se cumple: por el Lema \ref{lem:puras} basta
+revisar las configuraciones puras, y cada una de ellas aparece como término de alguno de los máximos,
+salvo $\Pi^{2}_{i,i}=n_i(z_i-w_i)-w_i$, que es negativo porque $w_i\ge z_i\ge0$.
+
+\emph{Sobre el tipo 2 sobrante.} Si $w_2>z_2$, entonces producir por cuenta propia da pérdidas y todo
+el tipo 2 debe emplearse como solucionador de trabajadores del tipo 1, lo que es factible porque
+$n_1\mu_2<\mu_1$ por (A1). Si $w_2=z_2$, los sobrantes producen por su cuenta con beneficio cero. En
+ambos casos la asignación existe.
+
+\end{proof}
+
+\begin{obs}[quién cobra renta]\label{obs:renta}
+El tipo 1 gana exactamente su producto individual: no cobra renta. El tipo 2 cobra renta,
+$w_2>z_2$, si y solo si $n_1(z_2-z_1)>z_2$, es decir si y solo si $z_2>\bar z$.
+\end{obs}
+
+\begin{teorema}[equilibrio con IA autónoma]\label{th:aut}
+Bajo (A0)--(A3), con IA autónoma existe equilibrio, $r^{*}=\ai$ y los salarios son únicos:
+\[
+  w_1^{*}=\max\Big\{z_1,\ \ai\Big(1-\frac{1}{n_1}\Big)\Big\},\qquad
+  w_2^{*}=\max\Big\{z_2,\ \ai\Big(1-\frac{1}{n_2}\Big)\ \text{ó}\ n_a(z_2-\ai),\ n_1(z_2-w_1^{*})\Big\},
+\]
+\[
+  w_3^{*}=\max\big\{z_3,\ n_a(z_3-\ai),\ n_1(z_3-w_1^{*}),\ n_2(z_3-w_2^{*})\big\},
+\]
+donde en $w_2^{*}$ aparece el término $\ai(1-1/n_2)$ si $z_2\le \ai$ y el término $n_a(z_2-\ai)$ si
+$z_2\ge \ai$.
+\end{teorema}
+
+\begin{proof}
+\emph{Alquiler.} Por (A3) el compute excede todos sus usos con humanos, así que alguna unidad se
+emplea en una firma automatizada de una capa; por $(\Z)$, $\Pi^{1}_{AI}=0$, es decir $r^{*}=\ai$.
+
+\emph{Salarios.} El argumento es el del Teorema~\ref{th:pre}, con dos configuraciones más. Para el
+tipo 1, el Lema~\ref{lem:alcanzado} da como opciones $z_1$, $\ai-r^{*}/n_1=\ai(1-1/n_1)$ (trabajador
+de un solucionador de IA) y $z_i-w_i^{*}/n_1$ (trabajador de un solucionador humano). Si el salario
+excediera el máximo de las dos primeras, ningún individuo del tipo 1 podría producir solo ni trabajar
+bajo IA sin pérdidas, luego todos serían trabajadores de solucionadores humanos, lo que contradice el
+Lema~\ref{lem:masas}. El Lema~\ref{lem:cotas} acota $w_1^{*}$ por las dos primeras, de donde la
+fórmula. El tipo 2 se trata igual, usando (A2), y añadiendo la opción de supervisar trabajadores de IA
+cuando $z_2\ge\ai$. El tipo 3 no es trabajador (Lema~\ref{lem:masas}), así que su salario es el máximo
+de los cuatro valores listados.
+
+\emph{Existencia y $(\N)$.} La asignación del Lema \ref{lem:asignacion} satisface $(\Mk)$, y el
+compute sobrante se emplea en firmas automatizadas de una capa, lo que sostiene $r^{*}=\ai$. Para
+$(\N)$, el Lema \ref{lem:puras} reduce el problema a las configuraciones puras; cada una es un término
+de alguno de los máximos, salvo $\Pi^{2}_{i,i}\le0$, que se sigue de $w_i^{*}\ge z_i\ge0$, y salvo
+$\Pi^{tA}_{3}$ y $\Pi^{bA}_{1}$, no admisibles por (A0) excepto en el caso de frontera $z_1=\ai$,
+donde $\Pi^{bA}_{1}=-w_1^{*}\le0$.
+
+\end{proof}
+
+\begin{teorema}[equilibrio con IA no autónoma]\label{th:na}
+Bajo (A0)--(A3), con IA no autónoma existe equilibrio, $r^{\star}=0$ y los salarios son únicos:
+\[
+  w_1^{\star}=\max\{z_1,\ \ai\},\qquad
+  w_2^{\star}=\max\{z_2,\ \ai\cdot 1\{z_2\le \ai\},\ n_1(z_2-w_1^{\star})\},\qquad
+  w_3^{\star}=\max\{z_3,\ n_1(z_3-w_1^{\star}),\ n_2(z_3-w_2^{\star})\}.
+\]
+\end{teorema}
+
+\begin{proof}
+Sin autonomía las firmas de una capa automatizadas y las de trabajadores de IA no producen, así que
+todo el compute que se usa va a solucionadores de IA; su demanda es a lo más
+$\mu_1/n_1+\mu_2/n_2<\mu$ por (A3), luego sobra compute ocioso y $(\Mk)$ da $r^{\star}=0$. Entonces
+$\Pi^{tA}_{j}\le0$ se lee $n_j[\ai-w_j^{\star}]\le0$, es decir $w_j^{\star}\ge \ai$ para los tipos con
+$z_j\le \ai$. El resto del argumento de unicidad es idéntico al del Teorema \ref{th:aut}, eliminando
+las configuraciones no admisibles, y la existencia es de nuevo el Lema \ref{lem:asignacion}.
+\end{proof}
+
+\section{Resultados}
+
+\begin{corolario}[ganadores en el fondo: análogo de la Proposición 5]\label{cor:fondo}
+Con IA autónoma,
+\[
+  w_1^{*}>w_1\iff \ai>\bar z=\frac{z_1}{1-h(1-z_1)} .
+\]
+Con IA no autónoma, $w_1^{\star}>w_1\iff \ai>z_1=w_1$. Además $\bar z>z_1$ y
+\[
+  \frac{\bar z}{z_1}=\frac{1}{1-h(1-z_1)}=\frac{n_1}{n_1-1}>1 .
+\]
+\end{corolario}
+\begin{proof}
+Por el Teorema~\ref{th:pre}, $w_1=z_1$. Por el Teorema~\ref{th:aut},
+$w_1^{*}=\max\{z_1,\ai(1-1/n_1)\}$, luego $w_1^{*}>z_1$ si y solo si $\ai(1-1/n_1)>z_1$; como
+$1-1/n_1=1-h(1-z_1)>0$, esto equivale a $\ai>\bar z$. Por el Teorema~\ref{th:na},
+$w_1^{\star}=\max\{z_1,\ai\}>z_1$ si y solo si $\ai>z_1$. Finalmente
+$1-h(1-z_1)\in(0,1)$ da $\bar z>z_1$, y $1/n_1=h(1-z_1)$ da la expresión del cociente.
+\end{proof}
+
+\begin{intuicion}
+En ambos regímenes la condición es sobre la \emph{capacidad} de la IA: el trabajador menos conocedor
+acepta trabajar bajo un jefe de IA solo si eso le paga más que producir solo. Lo que cambia con la
+autonomía es el precio del jefe: con autonomía la IA tiene costo de oportunidad $\ai$ (podría producir
+sola) y ese costo se descuenta del salario del trabajador; sin autonomía su costo de oportunidad es
+cero y el trabajador se queda con todo el producto del equipo. Por eso el umbral se multiplica por
+$n_1/(n_1-1)$: la autonomía no decide \emph{si} hay ganadores abajo, decide qué tan buena debe ser la
+IA para que los haya.
+\end{intuicion}
+
+\begin{corolario}[el fondo siempre prefiere la IA no autónoma]\label{cor:prefiere}
+Si $\ai>z_1$, entonces $w_1^{\star}=\ai>w_1^{*}$.
+\end{corolario}
+\begin{proof}
+$w_1^{\star}=\ai$ y $w_1^{*}=\max\{z_1,\ai(1-1/n_1)\}$. Como $\ai>z_1$ y $\ai(1-1/n_1)<\ai$ porque
+$n_1>1$, el máximo es estrictamente menor que $\ai$.
+\end{proof}
+
+\begin{corolario}[el tipo automatizado]\label{cor:automatizado}
+Supóngase $\ai=z_2$. Entonces $w_2^{*}=w_2^{\star}=z_2$ y, por lo tanto, $w_2^{*}\le w_2$, con
+desigualdad estricta si y solo si $z_2>\bar z$. Si además $z_2>\bar z$,
+\[
+  w_1^{*}-w_1=\frac{w_2-w_2^{*}}{n_1}.
+\]
+\end{corolario}
+\begin{proof}
+Con $\ai=z_2$, el término $\ai(1-1/n_2)$ del Teorema~\ref{th:aut} es menor que $z_2$ y
+$n_a(z_2-\ai)=0$, así que $w_2^{*}=\max\{z_2,\ n_1(z_2-w_1^{*})\}$. Por el Teorema~\ref{th:aut},
+$w_1^{*}\ge \ai(1-1/n_1)=z_2-z_2/n_1$, luego $n_1(z_2-w_1^{*})\le z_2$ y por lo tanto $w_2^{*}=z_2$.
+El mismo cálculo con $w_1^{\star}=\ai=z_2$ da $n_1(z_2-w_1^{\star})=0$ y $w_2^{\star}=z_2$. Por la
+Observación~\ref{obs:renta}, $w_2=\max\{z_2,n_1(z_2-z_1)\}\ge z_2=w_2^{*}$, con desigualdad estricta
+si y solo si $z_2>\bar z$. Para la identidad, si $z_2>\bar z$ entonces $w_2=n_1(z_2-z_1)$,
+$w_1^{*}=z_2(1-1/n_1)$ y $w_1=z_1$, de donde
+\[
+  \frac{w_2-w_2^{*}}{n_1}=\frac{n_1(z_2-z_1)-z_2}{n_1}=z_2-z_1-\frac{z_2}{n_1}
+  =z_2\Big(1-\frac{1}{n_1}\Big)-z_1=w_1^{*}-w_1. \qedhere
+\]
+\end{proof}
+
+\begin{intuicion}
+El tipo cuyo conocimiento la IA replica pierde toda su renta, porque compite con un sustituto perfecto
+de oferta elástica cuyo precio es $\ai$. La identidad dice adónde va esa renta: se reparte, en partes
+iguales, entre los $n_1$ trabajadores del equipo que ese tipo supervisaba. Es el ``efecto share'' del
+paper, aquí como identidad contable exacta.
+\end{intuicion}
+
+\begin{corolario}[los más conocedores: análogo de la Proposición 6(4)]\label{cor:top}
+$w_3^{*}\ge w_3^{\star}$: los más conocedores prefieren, débilmente, la IA autónoma. Si además
+$\ai=z_2$, entonces $w_3^{*}\le w_3$: pierden respecto del mundo sin IA.
+\end{corolario}
+\begin{proof}
+Para la primera parte, por los Teoremas~\ref{th:aut} y \ref{th:na} basta comparar término a término.
+Como $w_1^{*}\le w_1^{\star}$ y $w_2^{*}\le w_2^{\star}$ (Corolarios~\ref{cor:prefiere} y
+\ref{cor:automatizado}), se tiene $n_1(z_3-w_1^{*})\ge n_1(z_3-w_1^{\star})$ y
+$n_2(z_3-w_2^{*})\ge n_2(z_3-w_2^{\star})$; el máximo de $w_3^{*}$ contiene además el término
+$n_a(z_3-\ai)\ge0$. Luego $w_3^{*}\ge w_3^{\star}$.
+
+Para la segunda, sea $\ai=z_2$, de modo que $w_2^{*}=z_2$ y $n_a(z_3-\ai)=n_2(z_3-z_2)$; los dos
+términos centrales del máximo de $w_3^{*}$ coinciden y
+$w_3^{*}=\max\{z_3,\ n_2(z_3-z_2),\ n_1(z_3-w_1^{*})\}$. Comparamos con
+$w_3=\max\{z_3,\ n_1(z_3-z_1),\ n_2(z_3-w_2)\}$ término a término:
+\begin{enumerate}[label=(\roman*),leftmargin=2.2em]
+  \item $n_1(z_3-w_1^{*})\le n_1(z_3-z_1)$, porque $w_1^{*}\ge z_1$ por el Teorema~\ref{th:aut};
+  \item $n_2(z_3-z_2)<n_1(z_3-z_1)$, por el Lema~\ref{lem:phi} con $s=z_3$ aplicado a $z_1<z_2$.
+\end{enumerate}
+Ambos términos de $w_3^{*}$ están dominados por términos de $w_3$, y $z_3$ aparece en los dos
+máximos, luego $w_3^{*}\le w_3$. \qedhere
+\end{proof}
+
+\begin{intuicion}
+Los más conocedores pierden por el Lema~\ref{lem:phi}: cambiar trabajadores del tipo 1 por agentes de
+IA más capaces encoge el equipo más rápido de lo que sube el excedente por trabajador. Y no lo
+compensan por el lado del reparto, porque bajo (A1) sus trabajadores no cobraban renta antes de la IA:
+no hay renta ajena que capturar. Aun así prefieren la IA autónoma a la no autónoma, porque sin
+autonomía el salario de sus trabajadores es mayor.
+\end{intuicion}
+
+\section{La frontera con el modelo del continuo}
+
+El Corolario~\ref{cor:top} dice que los más conocedores pierden, mientras que la Proposición 5 del
+paper afirma que siempre ganan. La diferencia está localizada y es demostrable: el resultado del paper
+exige $h<h_0$, es decir que \emph{no} existan productores independientes antes de la IA, de modo que
+todos los humanos cobren rentas y el efecto \emph{share} opere también arriba. Nuestro supuesto (A1)
+produce lo contrario: hay exceso de trabajadores del tipo 1, algunos producen solos y, por el
+Teorema~\ref{th:pre}, $w_1=z_1$ exactamente. Sin renta abajo, el jefe no tiene nada que capturar y
+solo queda el efecto \emph{match}, negativo por el Lema~\ref{lem:phi}. Es, con otro ropaje, el caso
+$h\ge h_0$ que los propios autores identifican como aquel en que los más conocedores pueden perder.
+
+Eliminar (A1) no arregla el problema, lo traslada: sin exceso de ninguna masa el mercado se vacía con
+igualdad y el reparto del excedente entre trabajador y solucionador queda indeterminado dentro de un
+intervalo. Con un continuo de tipos esa indeterminación desaparece porque la condición de primer orden
+$w'(m(z))=n(z)$ selecciona un único reparto en cada punto. Esa es la frontera exacta entre la versión
+discreta y la del paper: los tipos finitos bastan para demostrar las condiciones de umbral sobre la
+capacidad, pero no para generar rentas en ambos extremos a la vez.
+
+\end{document}
