@@ -216,8 +216,194 @@ Muestra que el valor marginal del conocimiento de un trabajador es menor que 1 (
 \end{ejercicio}
 
 %======================================================================
-% Part II (autonomous AI: Props. 2-4), Part III (Prop. 5),
-% Part IV (non-autonomous AI: Prop. 6 and the trap) will be added next.
+\part{La IA autónoma: Proposiciones 2, 3 y 4}
+%======================================================================
+
+\section{Qué agrega la IA al modelo}
+
+La IA es una tecnología que convierte \emph{compute} en ``agentes de IA'' idénticos, cada uno con
+conocimiento $\zai\in[0,1)$ y cada uno consumiendo una unidad de compute. Un agente de IA es un
+\textbf{sustituto perfecto} de un humano con conocimiento $\zai$. Tres supuestos hacen todo el trabajo:
+
+\begin{enumerate}[label=(\roman*)]
+  \item \textbf{Escalabilidad}: una vez que el conocimiento $\zai$ está en el modelo, se replica en
+  todo el compute disponible. La IA no es ``un humano más''; es un tipo de conocimiento con oferta
+  elástica.
+  \item \textbf{Autonomía} (en esta parte): los agentes pueden ser co-trabajadores \emph{y} co-pilotos.
+  \item \textbf{Compute abundante} respecto del tiempo humano: hay más agentes de IA de los que se
+  pueden emparejar con humanos, así que \textbf{algo de compute termina produciendo de forma
+  independiente}.
+\end{enumerate}
+
+El supuesto (iii) es el que fija el precio. Si una firma automatizada de una capa produce $\zai$ y
+debe ganar cero,
+\begin{equation}\label{eq:r}
+  \boxed{\,r^{*}=\zai\,}
+\end{equation}
+El alquiler del compute es igual a lo que la IA produce sola. Y como el humano con conocimiento
+$\zai$ es sustituto perfecto de la IA, $w^{*}(\zai)=\zai$: \textbf{ese humano cae exactamente sobre la
+recta de 45°}. Antes de la IA ganaba $w(\zai)>\zai$, así que \emph{siempre pierde}. Esa es la primera
+consecuencia distributiva del modelo y no depende de nada más.
+
+\section{Proposición 2: el equilibrio con IA autónoma}
+
+\begin{proposicion}[Prop.~2]
+Con IA autónoma existe un único equilibrio, eficiente, con estratificación ocupacional
+$\W^{*}\below\I^{*}\below\Sset^{*}$, emparejamiento positivo, y además:
+\[
+  \W^{*}\below\{\zai\}\below\Sset^{*},\qquad \W_a^{*}\below\W_p^{*},\qquad \Sset_p^{*}\below \Sset_a^{*}.
+\]
+La IA siempre se usa en producción independiente; se usa además como trabajadora si $\zai\in\W$ y
+como solucionadora si $\zai\in\Sset$. Los precios son $r^{*}=\zai$ y
+\[
+  w^{*}(z)=\underbrace{\zai\Big(1-\frac{1}{n(z)}\Big)}_{z\in\W_a^{*}},\quad
+  \underbrace{m^{*}(z)-\frac{w^{*}(m^{*}(z))}{n(z)}}_{z\in\W_p^{*}},\quad
+  \underbrace{z}_{z\in\I^{*}},\quad
+  \underbrace{C^{*}+\int_{\inf \Sset_p^{*}}^{z}\! n(e^{*}(u))du}_{z\in \Sset_p^{*}},\quad
+  \underbrace{n(\zai)(z-\zai)}_{z\in \Sset_a^{*}},
+\]
+con $C^{*}=\inf \Sset_p^{*}$.
+\end{proposicion}
+
+\subsection{De dónde sale cada fórmula}
+
+\paragraph{Humanos que trabajan bajo un jefe de IA ($z\in\W_a^{*}$).}
+La firma ``top-automatizada'' alquila un agente de IA como solucionador y contrata $n(z)$ humanos:
+\[
+  n(z)\,[\zai-w^{*}(z)]-r^{*}=0
+  \ \stackrel{r^{*}=\zai}{\Longrightarrow}\
+  w^{*}(z)=\zai\Big(1-\frac{1}{n(z)}\Big)=\zai\big(1-h(1-z)\big).
+\]
+
+\paragraph{Humanos que supervisan trabajadores de IA ($z\in \Sset_a^{*}$).}
+La firma ``bottom-automatizada'' alquila $n(\zai)$ agentes como trabajadores y contrata un humano
+como solucionador:
+\[
+  n(\zai)\,[z-r^{*}]-w^{*}(z)=0 \Longrightarrow w^{*}(z)=n(\zai)\,(z-\zai).
+\]
+
+\begin{intuicion}
+Las dos fórmulas son la misma idea vista desde dos lados. El precio de la IA es $\zai$ y, por
+competencia, todo el excedente que la IA no se lleva va al humano del equipo. Nota que ambas son
+\emph{lineales} en $z$: la IA, al tener oferta elástica, ancla el reparto.
+\end{intuicion}
+
+\paragraph{Por qué $C^{*}=\inf \Sset_p^{*}$.}
+Pre-IA la constante $C$ era estrictamente mayor que $\inf\Sset$ (el solucionador marginal ganaba una
+renta). Post-IA siempre hay producción independiente en la economía, así que el salario debe ser
+continuo con la recta de 45° en el borde: el solucionador marginal gana exactamente lo que produciría
+solo. \textbf{Esa renta perdida es el ``efecto share'' que beneficiará a los de abajo.}
+
+\subsection{Por qué la IA no puede quedarse fuera de las organizaciones}
+
+Un argumento por contradicción que vale la pena entender, porque es el corazón de la parte dos de la
+proposición. Supón $\zai\in\W$ y que la IA \emph{no} se usa como trabajadora. Entonces la IA tampoco
+interactúa con humanos, los humanos se emparejan igual que antes y los salarios serían los pre-IA. Pero
+entonces $w^{*}(\zai)=w(\zai)>\zai$, y eso contradice que el humano $\zai$ compita con un sustituto
+perfecto que cuesta $\zai$. Si la IA no es trabajadora, tendría que ser solucionadora, pero entonces la
+economía tendría más solucionadores y menos trabajadores que antes, y el mercado no vacía.
+
+\section{Ejemplo resuelto: IA básica con $G$ uniforme y $h=1/2$}
+
+Tomamos $\zai=0.425\in\text{int}\,\W$ (recuerda: $\W=[0,\ 0.764]$ pre-IA). Suponemos la configuración de
+la Figura~4(a) del paper: la IA se usa como trabajadora y como productora independiente, pero no como
+solucionadora ($\W_a^{*}=\emptyset$). La economía humana queda partida en cuatro tramos:
+\[
+  \W_p^{*}=[0,z_1],\qquad \I^{*}=[z_1,z_2],\qquad \Sset_p^{*}=[z_2,z_3],\qquad \Sset_a^{*}=[z_3,1].
+\]
+
+\paragraph{Las tres ecuaciones.} Con $g\equiv1$:
+\begin{align}
+  m^{*}(z)&=z_2+h\Big(z-\frac{z^{2}}{2}\Big), &&\text{(restricción de recursos, igual que antes)}\\
+  w^{*}(m^{*}(z))&=z_2+z, &&\text{(identidad \eqref{eq:key} con } C^{*}=z_2)\\
+  w^{*}(z)&=m^{*}(z)-(z_2+z)\,h(1-z), &&z\in\W_p^{*}.
+\end{align}
+Las incógnitas $z_1,z_2,z_3$ salen de tres condiciones de continuidad y emparejamiento:
+\begin{enumerate}[label=(\alph*)]
+  \item continuidad en $z_1$ con la recta de 45°: $w^{*}(z_1)=z_1$;
+  \item el mejor trabajador humano va con el mejor solucionador humano ``de a pie'': $m^{*}(z_1)=z_3$;
+  \item continuidad en $z_3$ con la rama de los que supervisan IA: $z_2+z_1=n(\zai)\,(z_3-\zai)$.
+\end{enumerate}
+
+\paragraph{Solución numérica ($h=1/2$, $\zai=0.425$).}
+\[
+  z_1=0.425=\zai,\qquad z_2\approx0.533,\qquad z_3\approx0.700,
+\]
+\[
+  w^{*}(0)\approx0.267,\qquad w^{*}(1)=n(\zai)(1-\zai)=\frac1h=2 .
+\]
+Ambos números son exactamente los que aparecen en las Figuras~4(a) y 5(a) del paper ($0.267$ y $2$),
+lo que confirma que nuestra lectura del equilibrio es la correcta.
+
+\begin{ojo}
+Dos resultados para memorizar, porque reaparecen en la Proposición~5:
+\begin{itemize}
+  \item \textbf{Arriba}: $w^{*}(1)=n(\zai)(1-\zai)=1/h$ \emph{sin importar} $\zai$. Con $h=1/2$ eso es
+  $2>1.578=w(1)$. El humano más sabio siempre gana con IA autónoma.
+  \item \textbf{Abajo}: con $\zai=0.425$, $w^{*}(0)=0.267<0.357=w(0)$. El humano menos sabio pierde.
+  Pero si la IA fuese lo bastante buena como para ser \emph{solucionadora} de los de abajo, su salario
+  sería $w^{*}(0)=\zai(1-h)$, que crece con $\zai$. Ahí está el umbral de la Proposición~5.
+\end{itemize}
+\end{ojo}
+
+\section{Proposición 3: la IA reordena las ocupaciones}
+
+\begin{proposicion}[Prop.~3]
+Si $\zai\in\text{int}\,\W$ (IA \emph{básica}), entonces $\W^{*}\subset\W$ y $\Sset^{*}\supset\Sset$: la IA
+empuja humanos del trabajo rutinario hacia la resolución de problemas. Si $\zai\in\text{int}\,\Sset$
+(IA \emph{avanzada}), ocurre lo contrario: $\W^{*}\supset\W$ y $\Sset^{*}\subset\Sset$.
+\end{proposicion}
+
+\begin{intuicion}
+La IA es un insumo barato y abundante en el tramo donde cae su conocimiento. Si es básica, abarata el
+trabajo rutinario; entonces sobran trabajadores (humanos + IA) y falta quien los supervise, así que los
+trabajadores marginales suben a solucionadores. Si es avanzada, abarata la supervisión y pasa lo
+contrario: los solucionadores marginales bajan a trabajar.
+\end{intuicion}
+
+En nuestro ejemplo numérico se ve directo: pre-IA los trabajadores eran $[0,\ 0.764]$ y post-IA son
+$[0,\ 0.425]$; los solucionadores pasan de $[0.764,\ 1]$ a $[0.533,\ 1]$.
+
+\section{Proposición 4: qué pasa con los que no cambian de ocupación}
+
+Definiciones: la \emph{productividad} de un trabajador es su producto esperado por unidad de tiempo,
+que es el conocimiento de su jefe, $m(z)$. El \emph{tramo de control} de un solucionador es el número
+de trabajadores que supervisa, creciente en el conocimiento de esos trabajadores.
+
+\begin{proposicion}[Prop.~4]
+\begin{itemize}
+  \item Si $\zai\in\text{int}\,\W$: la productividad de todo $z\in\W^{*}\subset\W$ cae. El tramo de
+  control de $z\in\Sset\subset\Sset^{*}$ crece si $e(z)<\zai$ y cae si $e(z)>\zai$.
+  \item Si $\zai\in\text{int}\,\Sset$: la productividad de $z\in\W\subset\W^{*}$ sube si $z<e(\zai)$ y
+  cae si $z>e(\zai)$. El tramo de control de todo $z\in\Sset^{*}\subset\Sset$ crece.
+\end{itemize}
+\end{proposicion}
+
+\begin{intuicion}
+Con IA básica pasan dos cosas a la vez: (i) los agentes de IA son \emph{los mejores trabajadores} de la
+economía post-IA, así que por emparejamiento positivo se llevan a los mejores jefes; y (ii) entran
+solucionadores nuevos, menos sabios que los de antes. Las dos empeoran el jefe disponible para los
+humanos que siguen de trabajadores. En cambio, los solucionadores de abajo mejoran: ahora supervisan
+a los trabajadores de abajo, que antes atendían jefes peores.
+\end{intuicion}
+
+El paper conecta esto con evidencia anecdótica: en bancos de inversión, los analistas junior quedan cada
+vez más lejos de los socios senior a medida que la IA absorbe tareas que antes los involucraban
+(Beane y Anthony, 2024). Es exactamente ``la productividad de los que siguen de trabajadores cae
+porque sus jefes se fueron a supervisar IA''.
+
+\begin{ejercicio}
+En el ejemplo numérico, ¿cuál es el jefe pre-IA y post-IA del trabajador $z=0.2$? Calcula $m(0.2)$ y
+$m^{*}(0.2)$ y verifica que la productividad cae.
+\end{ejercicio}
+
+\begin{ejercicio}
+Muestra que $w^{*}(1)=1/h$ para cualquier $\zai$ en el caso en que la IA se usa como trabajadora.
+¿Por qué el resultado no depende de $\zai$? (Pista: $n(\zai)(1-\zai)$.)
+\end{ejercicio}
+
+%======================================================================
+% Part III (Prop. 5) and Part IV (non-autonomous AI: Prop. 6 and the trap) come next.
 %======================================================================
 
 \end{document}
