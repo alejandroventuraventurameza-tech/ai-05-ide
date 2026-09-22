@@ -213,6 +213,39 @@ end Params
 
 end IdeTalamas
 
+/-! ### Lemma 1: pure configurations are without loss of generality
+
+A firm whose solver splits her time between several worker types has a profit that is *affine* in the
+vector of time shares, over the simplex `{t ≥ 0, ∑ t ≤ 1}`.  An affine function on the simplex is
+bounded by its values at the vertices, and the vertices are exactly the pure configurations: the
+origin (a one-layer firm) and the unit vectors (a two-layer firm with a single worker type).  So
+condition (N) on pure configurations implies condition (N) on every mixed firm. -/
+
+/-- An affine combination over the simplex is bounded by an upper bound of its coefficients. -/
+theorem affine_le_of_le {k : ℕ} (t c : Fin k → ℝ) (c₀ M : ℝ)
+    (ht : ∀ j, 0 ≤ t j) (hsum : ∑ j, t j ≤ 1)
+    (hc : ∀ j, c j ≤ M) (hc₀ : c₀ ≤ M) :
+    (∑ j, t j * c j) + (1 - ∑ j, t j) * c₀ ≤ M := by
+  have h1 : ∑ j, t j * c j ≤ ∑ j, t j * M :=
+    Finset.sum_le_sum (fun j _ => mul_le_mul_of_nonneg_left (hc j) (ht j))
+  have h2 : ∑ j, t j * M = (∑ j, t j) * M := by
+    rw [← Finset.sum_mul]
+  have h3 : (1 - ∑ j, t j) * c₀ ≤ (1 - ∑ j, t j) * M :=
+    mul_le_mul_of_nonneg_left hc₀ (by linarith)
+  have h4 : (∑ j, t j) * M + (1 - ∑ j, t j) * M = M := by ring
+  linarith [h1, h3, h2.le, h2.ge]
+
+/-- Lemma 1 in the form used by the derivation: if no pure configuration available to a solver earns
+more than `M` (in the equilibrium argument, `M = 0`), then no mixed firm does either.
+`c j` is the revenue of a team of workers of type `j` filling the solver's whole time, `z` is what the
+solver produces alone, and `w` is her wage. -/
+theorem mixed_firm_no_gain {k : ℕ} (t c : Fin k → ℝ) (z w M : ℝ)
+    (ht : ∀ j, 0 ≤ t j) (hsum : ∑ j, t j ≤ 1)
+    (hpure : ∀ j, c j - w ≤ M) (hone : z - w ≤ M) :
+    (∑ j, t j * c j) + (1 - ∑ j, t j) * z - w ≤ M := by
+  have h := affine_le_of_le t c z (M + w) ht hsum (fun j => by linarith [hpure j]) (by linarith)
+  linarith
+
 /-! ### Audit: every theorem above must rest only on Lean's three standard axioms
 (`propext`, `Classical.choice`, `Quot.sound`).  Any occurrence of `sorryAx` would show up here. -/
 
@@ -226,3 +259,5 @@ end IdeTalamas
 #print axioms IdeTalamas.Params.no_positive_profit_31
 #print axioms IdeTalamas.Params.no_positive_profit_one_layer
 #print axioms IdeTalamas.Params.no_positive_profit_same_type
+#print axioms IdeTalamas.Params.affine_le_of_le
+#print axioms IdeTalamas.Params.mixed_firm_no_gain
