@@ -87,7 +87,9 @@ autonomy does decide is total output, the fate of the top, and how much the bott
   earns positive profit and that every corollary holds.
 - **`extra/lean-sandbox/`** — our own Lean 4 + Mathlib formalization of the discrete results
   (`IdeTalamas/Discrete.lean`), building with exit code 0 and with an axiom audit showing no `sorryAx`.
-- **`lean/`** — the AppliedModelingLib paper folder, copied exactly as generated.
+- **`lean/`** — the AppliedModelingLib paper folder, copied exactly as generated. The run completed
+  the source and audit phase and stopped at a quota limit before the formalization phase, so the Lean
+  files there are templates; `prompts.md` §6 records the exact blocker and the check output.
 - **`hand/`** — the derivation written by hand.
 
 ## Reproducing

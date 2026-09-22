@@ -104,7 +104,9 @@ No `sorryAx`: no proof rests on an admitted step.
 
 ## 6. AppliedModelingLib run — GPT-5.6 Sol, reasoning effort `xhigh`
 
-Run from the root of the AppliedModelingLib clone, as required by the issue:
+Run on 2026-09-22 from the root of a fresh clone of AppliedModelingLib, with the Codex CLI
+(`codex-cli 0.155.1`) installed inside WSL2/Ubuntu, model `gpt-5.6-sol`, reasoning effort `xhigh`,
+as the issue requires. The instruction given was the one prescribed by the issue, verbatim:
 
 ```
 Please formalize https://arxiv.org/abs/2312.05481v11 using the
@@ -112,11 +114,52 @@ paper-formalization skill and workflow in this repository.
 Use IT25KnowledgeEconomy as the paper folder.
 ```
 
-Paper-scoped check, to be recorded verbatim:
+### What the run produced
+
+The workflow completed its **source phase** and stopped before the formalization phase:
+
+- `source/` — the pinned arXiv v11 tarball, the online appendix, and the extracted source surface.
+- `audit/` — five generated reports: assumption matching, defect support matching, library semantic
+  review, source–proof fidelity, and the v11 raw-source spec screening.
+- `docs/` — `FORMALIZATION_PLAN.md`, `FORMALIZATION_NOTES.md`, `FORMALIZATION_WORKING_MEMO.md`,
+  `AGENT_SOURCE_AUDIT.md`.
+- `Assumptions.lean`, `MainTheorems.lean`, `PaperInterface.lean`, `ProofInterface.lean` — **templates
+  only**, 138 lines in total, with no declarations from the paper. `status.json` reports
+  `"status": "not started"` and `paper_interface.line_count: 0`.
+
+### The exact blocker
+
+The Codex session ended on a hard quota stop, with the message
+`Your workspace is out of credits. Ask your workspace owner to refill in order to continue.`
+The formalization phase never started. This is a billing limit, not a technical failure of the
+workflow: nothing in the run reported an unprovable target or a Lean error.
+
+### Build and paper-scoped check, recorded as generated
 
 ```
-python3 scripts/paper_contribution.py check IT25KnowledgeEconomy --fast
+$ lake build IT25KnowledgeEconomy
+Build completed successfully (8318 jobs).
+
+$ python3 scripts/paper_contribution.py check IT25KnowledgeEconomy --fast
++ lake build +IT25KnowledgeEconomy.PaperInterface
+Build completed successfully (8315 jobs).
++ git diff --check -- papers/IT25KnowledgeEconomy papers/IT25KnowledgeEconomy.lean lakefile.toml ':(exclude)papers/IT25KnowledgeEconomy/source/'
+EXIT: 0
 ```
 
-<!-- TODO: paste the run's prompts, the relevant answers, the check output, and — if any target
-     remains open — the exact blocker, before merging. -->
+**How to read that exit code.** The check passes because it builds the paper interface and verifies
+the diff is clean. The interface is empty, so it passes trivially. A green check here certifies that
+nothing is broken, not that anything has been formalized.
+
+### Next step
+
+Resume the same session with `codex resume` once quota is restored; the plan in
+`docs/FORMALIZATION_PLAN.md` is already written, so the formalization phase starts from there rather
+than from scratch.
+
+### What exists instead, and what it is not
+
+`extra/lean-sandbox/` holds our own Lean 4 + Mathlib formalization of the discrete three-type version
+of the model: ten theorems, `lake build` exit code 0, and an axiom audit showing no `sorryAx`. It is
+presented as independent analytical work. **It is not the AppliedModelingLib run the issue asks for**
+and is not a substitute for it.
