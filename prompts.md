@@ -162,7 +162,7 @@ wrote and where the source was ambiguous.
 - `lake build IT25KnowledgeEconomy` → `Build completed successfully (8318 jobs)`.
 - `python3 scripts/paper_contribution.py check IT25KnowledgeEconomy --fast` → exit 0.
 
-### The defect this run has, and it is the important part
+### The defect session 2 introduced, and it is the important part
 
 To fit the narrow scope, session 2 **deleted `SourceModel.lean`** and replaced the concrete
 equilibrium definitions with abstract fields of `EconomyPrimitives`:
@@ -214,19 +214,60 @@ exceeds the pre-AI wage of the least knowledgeable human. That is the same capab
 repository derives by hand and verifies in Lean for the discrete model — reached from an independent
 translation of the source.
 
-### Next step
+### Session 3 — repair (reasoning effort `high`)
 
-Restore the concrete equilibrium model and make the statements quantify over it:
+Instruction given:
 
 ```
-Restore the concrete equilibrium model that was deleted from SourceModel.lean, and make
-Assumptions.lean use it: preAIEquilibrium, autonomousEquilibrium and nonAutonomousFeasible
-must be the paper's definitions (feasibility, market clearing, non-positive profit for every
-firm configuration, zero profit for used ones), not abstract predicate fields.
+Two corrections, in this order. Do not re-read source.txt, source-surface.tex or the online
+appendix; work from what is already in the paper folder.
 
-The Proposition 5 and 6 statements in PaperInterface.lean must then quantify over that
-model. Do not weaken the statements. Run lake build once at the end.
+1. Restore the concrete equilibrium model you deleted from SourceModel.lean: occupation sets,
+   matching and its market-clearing integral condition, the profit of every admissible firm
+   configuration (one-layer human, two-layer human, one-layer AI, AI solver with human workers,
+   human solver with AI workers), non-positive profit for all of them, and zero profit for the
+   ones in use — for the pre-AI, autonomous and non-autonomous economies.
+
+2. Make Assumptions.lean use it. preAIEquilibrium, autonomousEquilibrium and
+   nonAutonomousFeasible must be those definitions, not abstract fields of EconomyPrimitives.
+   The Proposition 5 and 6 statements in PaperInterface.lean must then quantify over that
+   model, with the same strength they have now. Do not weaken any statement to make it compile.
+
+Run lake build as many times as you need and stop only when it succeeds. Then report which
+firm configurations you included and whether any statement had to change.
 ```
+
+Two deliberate changes from session 2's instruction: the one-build limit was removed (it had left a
+`Set.interior` fix unverified), and the five firm configurations were named one by one instead of
+being referred to as "the paper's conditions".
+
+**Result.** `SourceModel.lean` restored at 369 lines with the concrete model, and — the part worth
+noticing — the admissible configurations are now separated by regime: two before AI, five with
+autonomous AI, and three with non-autonomous AI, excluding the two that require autonomy.
+`Assumptions.lean` shrank to 37 lines holding only standing hypotheses, with no abstract predicate
+fields left (`grep ": Prop$\|→ Prop$"` returns nothing). Both Specs now quantify over the concrete
+equilibrium predicates, and the output comparison in Proposition 6 uses the concrete output integrals.
+
+```
+$ lake build IT25KnowledgeEconomy
+Build completed successfully (8318 jobs).
+
+$ python3 scripts/paper_contribution.py check IT25KnowledgeEconomy --fast
+EXIT: 0
+```
+
+**An unrequested change worth flagging.** The agent also rewrote `NonAutonomousOutcome.Equivalent`,
+replacing equality up to null sets (`occupationAEEq`) with strict set equality, replacing almost-everywhere
+equality of the matching with equality on all of `[0,1]`, and adding equality of total output. Its report
+says no statement was weakened, which is literally true: this makes uniqueness *stronger*. But the paper
+states uniqueness **modulo null occupation boundaries**, so a strict-set-equality version may simply be
+false, and therefore unprovable. Fixing a vacuous statement by overshooting into an unprovable one is the
+same fidelity failure seen from the other side.
+
+**Current status of the Lean component.** The statements of Propositions 5 and 6 exist over the paper's
+own equilibrium model and compile; the proofs do not exist (`ProofInterface.lean` untouched, by
+instruction). `status.json` still reports `"status": "not started"` and `paper_interface.line_count: 0`,
+so the workflow's state file does not reflect what is on disk.
 
 ### What exists alongside, and what it is not
 

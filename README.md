@@ -1,5 +1,7 @@
 # ai-05-ide — Ide & Talamàs (2025), *Artificial Intelligence in the Knowledge Economy*
 
+Repository: <https://github.com/alejandroventuraventurameza-tech/ai-05-ide>
+
 Weekly repository 5 for *Artificial Intelligence and Economic Modeling* (UP 2026-II), issue
 [#4](https://github.com/alexanderquispe/AI-Econ-Modeling/issues/4).
 
