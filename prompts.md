@@ -102,11 +102,14 @@ No `sorryAx`: no proof rests on an admitted step.
 
 ---
 
-## 6. AppliedModelingLib run — GPT-5.6 Sol, reasoning effort `xhigh`
+## 6. AppliedModelingLib run — GPT-5.6 Sol
 
-Run on 2026-09-22 from the root of a fresh clone of AppliedModelingLib, with the Codex CLI
-(`codex-cli 0.155.1`) installed inside WSL2/Ubuntu, model `gpt-5.6-sol`, reasoning effort `xhigh`,
-as the issue requires. The instruction given was the one prescribed by the issue, verbatim:
+Run from the root of a clone of AppliedModelingLib, with the Codex CLI (`codex-cli 0.155.1`)
+installed inside WSL2/Ubuntu, model `gpt-5.6-sol`. Two sessions.
+
+### Session 1 (2026-09-22, reasoning effort `xhigh`)
+
+Instruction, verbatim from the issue:
 
 ```
 Please formalize https://arxiv.org/abs/2312.05481v11 using the
@@ -114,52 +117,119 @@ paper-formalization skill and workflow in this repository.
 Use IT25KnowledgeEconomy as the paper folder.
 ```
 
-### What the run produced
+The workflow completed the source phase — pinned arXiv v11 tarball and online appendix in `source/`,
+five generated reports in `audit/`, and `FORMALIZATION_PLAN.md`, `FORMALIZATION_NOTES.md`,
+`FORMALIZATION_WORKING_MEMO.md`, `AGENT_SOURCE_AUDIT.md` in `docs/` — and started writing
+`SourceModel.lean`, a 425-line formalization of the paper's competitive-equilibrium definition:
+occupation sets, matching, the market-clearing integral condition, the profit of every firm
+configuration, and non-positive/zero-profit conditions for the pre-AI, autonomous and non-autonomous
+economies.
 
-The workflow completed its **source phase** and stopped before the formalization phase:
-
-- `source/` — the pinned arXiv v11 tarball, the online appendix, and the extracted source surface.
-- `audit/` — five generated reports: assumption matching, defect support matching, library semantic
-  review, source–proof fidelity, and the v11 raw-source spec screening.
-- `docs/` — `FORMALIZATION_PLAN.md`, `FORMALIZATION_NOTES.md`, `FORMALIZATION_WORKING_MEMO.md`,
-  `AGENT_SOURCE_AUDIT.md`.
-- `Assumptions.lean`, `MainTheorems.lean`, `PaperInterface.lean`, `ProofInterface.lean` — **templates
-  only**, 138 lines in total, with no declarations from the paper. `status.json` reports
-  `"status": "not started"` and `paper_interface.line_count: 0`.
-
-### The exact blocker
-
-The Codex session ended on a hard quota stop, with the message
+The session then hit a hard quota stop:
 `Your workspace is out of credits. Ask your workspace owner to refill in order to continue.`
-The formalization phase never started. This is a billing limit, not a technical failure of the
-workflow: nothing in the run reported an unprovable target or a Lean error.
 
-### Build and paper-scoped check, recorded as generated
+### Session 2 (reasoning effort `high` — declared deviation)
+
+The issue prescribes `xhigh`. Session 1 exhausted the weekly quota during the source phase, so
+session 2 ran the **statements** phase at `high`, on the grounds that translating source statements
+is not a proof search. This is a deviation from the prescribed configuration, recorded here rather
+than hidden. Any later proof phase should run at `xhigh`.
+
+Scope instruction given (also a deviation worth recording: it is narrower than the issue's):
 
 ```
-$ lake build IT25KnowledgeEconomy
-Build completed successfully (8318 jobs).
+Do not re-read source.txt, source-surface.tex or the online appendix again; the source
+phase and the audits are complete. Work from docs/FORMALIZATION_PLAN.md.
 
-$ python3 scripts/paper_contribution.py check IT25KnowledgeEconomy --fast
-+ lake build +IT25KnowledgeEconomy.PaperInterface
-Build completed successfully (8315 jobs).
-+ git diff --check -- papers/IT25KnowledgeEconomy papers/IT25KnowledgeEconomy.lean lakefile.toml ':(exclude)papers/IT25KnowledgeEconomy/source/'
-EXIT: 0
+Scope for this session, in order:
+1. Assumptions.lean: only the primitives and hypotheses that Propositions 5 and 6 need.
+2. PaperInterface.lean: the statements of Propositions 5 and 6, source-facing, no proofs.
+3. Stop. Do not start ProofInterface.lean.
+
+Minimise file reads and run lake build once, at the end. Then report which statements you
+wrote and where the source was ambiguous.
 ```
 
-**How to read that exit code.** The check passes because it builds the paper interface and verifies
-the diff is clean. The interface is empty, so it passes trivially. A green check here certifies that
-nothing is broken, not that anything has been formalized.
+### What session 2 produced
+
+- `Assumptions.lean` (146 lines): `knowledgeSpace`, the outcome structures, `ModelAssumptions`
+  (continuous strictly positive density, `h, h₀ ∈ (0,1)` with `h < h₀`, non-negative compute),
+  `teamSize`, `cdf`, `ComputeAbundant` (the paper's displayed sufficient condition), `LiesBelow`,
+  `laborIncome`, and the non-autonomous efficiency, labor-income and uniqueness predicates.
+- `PaperInterface.lean` (145 lines): `bottomWinners`, `topWinners`, `proposition5_winnersSpec`,
+  `proposition6_nonAutonomousAISpec`.
+- `ProofInterface.lean` untouched, as instructed.
+- `lake build IT25KnowledgeEconomy` → `Build completed successfully (8318 jobs)`.
+- `python3 scripts/paper_contribution.py check IT25KnowledgeEconomy --fast` → exit 0.
+
+### The defect this run has, and it is the important part
+
+To fit the narrow scope, session 2 **deleted `SourceModel.lean`** and replaced the concrete
+equilibrium definitions with abstract fields of `EconomyPrimitives`:
+
+```lean
+preAIEquilibrium      : PreAIOutcome → Prop
+autonomousEquilibrium : ℝ → AutonomousOutcome → Prop
+nonAutonomousFeasible : ℝ → NonAutonomousOutcome → Prop
+```
+
+Consequently `proposition5_winnersSpec` and `proposition6_nonAutonomousAISpec` quantify over an
+*arbitrary* notion of equilibrium. They are well-formed, they compile, and the paper-scoped check
+passes — but as written they say nothing about the model of Ide and Talamàs, and can be satisfied
+trivially by instantiating the predicates with anything. A green build here certifies syntax and
+consistency, not fidelity to the source.
+
+Two things follow, and both belong in the presentation:
+
+1. **The scope instruction caused it.** Restricting the agent to two files gave it room to collapse
+   the model. The instruction was mine, and the defect is downstream of it.
+2. **It is the same class of error made three times in this project**, by different routes: the first
+   hand derivation omitted a firm configuration; the wage formulas omitted an inadmissible branch,
+   caught by a randomized test; and the agent dropped the equilibrium definition altogether. In every
+   case the artifact looked finished and the missing piece was a condition nobody was forced to state.
+
+`status.json` still reports `"status": "not started"` and `paper_interface.line_count: 0`, so the
+workflow's own state file does not reflect what is on disk.
+
+### Source ambiguities the agent reported, in its words
+
+- "Compute is abundant" was represented using the paper's displayed sufficient inequality.
+- Proposition 5 uses one threshold ζ across all admissible AI knowledge levels, rather than allowing a
+  different threshold for each level.
+- Proposition 6's "with strict inequality" for the least knowledgeable was interpreted as strictly
+  exceeding both comparison wages.
+- Equilibrium uniqueness is up to economically relevant equality on [0,1], avoiding distinctions
+  caused only by function values outside the model domain.
+- "Maximizes labor income" is stated relative to the abstract non-autonomous feasible-outcome
+  predicate.
+
+The fourth and fifth are exactly where the weakness above shows: uniqueness and maximality are stated
+against predicates that were never defined.
+
+### One point of agreement worth noting
+
+Independently of our own work, the agent's Proposition 6 statement contains
+`zAI ≤ pre.wage 0 → aiAssistedWorkers = ∅`: non-autonomous AI is not used unless its capability
+exceeds the pre-AI wage of the least knowledgeable human. That is the same capability threshold this
+repository derives by hand and verifies in Lean for the discrete model — reached from an independent
+translation of the source.
 
 ### Next step
 
-Resume the same session with `codex resume` once quota is restored; the plan in
-`docs/FORMALIZATION_PLAN.md` is already written, so the formalization phase starts from there rather
-than from scratch.
+Restore the concrete equilibrium model and make the statements quantify over it:
 
-### What exists instead, and what it is not
+```
+Restore the concrete equilibrium model that was deleted from SourceModel.lean, and make
+Assumptions.lean use it: preAIEquilibrium, autonomousEquilibrium and nonAutonomousFeasible
+must be the paper's definitions (feasibility, market clearing, non-positive profit for every
+firm configuration, zero profit for used ones), not abstract predicate fields.
 
-`extra/lean-sandbox/` holds our own Lean 4 + Mathlib formalization of the discrete three-type version
-of the model: ten theorems, `lake build` exit code 0, and an axiom audit showing no `sorryAx`. It is
-presented as independent analytical work. **It is not the AppliedModelingLib run the issue asks for**
-and is not a substitute for it.
+The Proposition 5 and 6 statements in PaperInterface.lean must then quantify over that
+model. Do not weaken the statements. Run lake build once at the end.
+```
+
+### What exists alongside, and what it is not
+
+`extra/lean-sandbox/` holds our own Lean 4 + Mathlib formalization of a discrete three-type version of
+the model: twelve theorems, `lake build` exit code 0, and an axiom audit showing no `sorryAx`. It is
+independent analytical work and **not** a substitute for the AppliedModelingLib run.
