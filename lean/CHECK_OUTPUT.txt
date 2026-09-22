@@ -1,0 +1,3 @@
++ lake build +IT25KnowledgeEconomy.PaperInterface
+Build completed successfully (8315 jobs).
++ git diff --check -- papers/IT25KnowledgeEconomy papers/IT25KnowledgeEconomy.lean lakefile.toml ':(exclude)papers/IT25KnowledgeEconomy/source/'
