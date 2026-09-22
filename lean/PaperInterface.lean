@@ -87,14 +87,14 @@ knowledge levels, while top winners exist at every admissible AI knowledge
 level.  `post zAI` selects the (earlier-proved unique) autonomous equilibrium.
 -/
 def proposition5_winnersSpec : Prop :=
-  ∀ (M : EconomyPrimitives) (pre : PreAIOutcome)
+  ∀ (E : Economy) (pre : PreAIOutcome)
       (post : ℝ → AutonomousOutcome),
-    ModelAssumptions M →
-    M.preAIEquilibrium pre →
-    (∀ zAI, ComputeAbundant M zAI →
-      M.autonomousEquilibrium zAI (post zAI)) →
+    ModelAssumptions E →
+    preAIEquilibrium E pre →
+    (∀ zAI, ComputeAbundant E zAI →
+      autonomousEquilibrium E zAI (post zAI)) →
     ∃ ζ, ζ ∈ interior pre.workers ∧
-      ∀ zAI, ComputeAbundant M zAI →
+      ∀ zAI, ComputeAbundant E zAI →
         ((bottomWinners pre (post zAI) zAI).Nonempty ↔ ζ < zAI) ∧
           (topWinners pre (post zAI) zAI).Nonempty
 
@@ -104,17 +104,17 @@ the properties of every equilibrium, so uniqueness is not weakened to
 uniqueness only among outcomes already satisfying the conclusions.
 -/
 def proposition6_nonAutonomousAISpec : Prop :=
-  ∀ (M : EconomyPrimitives) (zAI : ℝ)
+  ∀ (E : Economy) (zAI : ℝ)
       (pre : PreAIOutcome) (autonomous : AutonomousOutcome),
-    ModelAssumptions M →
-    ComputeAbundant M zAI →
-    M.preAIEquilibrium pre →
-    M.autonomousEquilibrium zAI autonomous →
-    UniqueNonAutonomousEquilibrium M zAI ∧
+    ModelAssumptions E →
+    ComputeAbundant E zAI →
+    preAIEquilibrium E pre →
+    autonomousEquilibrium E zAI autonomous →
+    uniqueNonAutonomousEquilibrium E zAI ∧
       ∀ nonAutonomous,
-        M.nonAutonomousEquilibrium zAI nonAutonomous →
-        NonAutonomousEfficient M zAI nonAutonomous ∧
-          NonAutonomousLaborIncomeMaximizing M zAI nonAutonomous ∧
+        nonAutonomousEquilibrium E zAI nonAutonomous →
+        nonAutonomousEfficient E zAI nonAutonomous ∧
+          nonAutonomousLaborIncomeMaximizing E zAI nonAutonomous ∧
           nonAutonomous.rentalRate = 0 ∧
           (zAI ≤ pre.wage 0 →
             nonAutonomous.aiAssistedWorkers = ∅ ∧
@@ -130,7 +130,8 @@ def proposition6_nonAutonomousAISpec : Prop :=
               nonAutonomous.aiAssistedWorkers.Nonempty ∧
               nonAutonomous.humanWorkers.Nonempty ∧
               nonAutonomous.humanSolvers.Nonempty) ∧
-          nonAutonomous.output < autonomous.output ∧
+          nonAutonomousOutput E zAI nonAutonomous <
+            autonomousOutput E zAI autonomous ∧
           (∃ z ∈ Set.Ioc 0 1,
             nonAutonomous.wage z ≤ pre.wage z ∧
               (pre.wage 0 < zAI → nonAutonomous.wage z < pre.wage z)) ∧
