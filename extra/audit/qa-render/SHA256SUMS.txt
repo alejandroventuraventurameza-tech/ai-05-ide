@@ -1,0 +1,4 @@
+31bcc136d95ba902c09ec8d9577adca45be9b347e09434b1fc142c051af21f03  presentation.tex
+29360ecbbeb26203a87cdf2ae69b6abee8deb79a5bcd73975ab43f1fb301defc  presentation.pdf
+a8cece4c40567ebdbcf4ecabaf46f10367d9dd4a11efabc1d515d3a5296d1470  extra/tutorial/tutorial-ide-talamas.tex
+771fe4ff6485ef55c0681e2f5e0348fb985bd81f8a0385f206faa12e811aa75c  extra/tutorial/tutorial-ide-talamas.pdf
