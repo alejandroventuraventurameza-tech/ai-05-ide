@@ -40,10 +40,10 @@ a deep-dive tutorial, and extensions/simulations.
 - Keep `lean-toolchain`, `lakefile.toml`, `lake-manifest.json` and all `.lean` files tracked; `.lake/` is ignored.
 
 ## Workflow conventions
-- Work happens on branch `analysis`; commits are made by Alejandro in GitHub Desktop.
+- Initial work happened on branch `analysis` using GitHub Desktop. The closeout used separate work branches, pull requests and GitHub Actions; no direct writes to `main`.
 - Conventional Commits (`feat:`, `docs:`, `build:`, `chore:`, `fix:`, `refactor:`, `test:`), one logical step per commit.
 - Work section by section; no step is marked done until it is verified.
-- Heavy commands (Lake builds, LaTeX compilation) are run by Alejandro in WSL to save tokens.
+- Historical heavy commands were run in WSL. Final Lean/Python and LaTeX checks were run in GitHub Actions; see `extra/audit/CLOSEOUT.md`.
 - Code, file names and code comments in English; explanations to Alejandro in Spanish.
 - Folder lives on Windows (`C:\Users\ASUS\projects\ai-05-ide`) and is symlinked from WSL
   (`~/projects/ai-05-ide`).
