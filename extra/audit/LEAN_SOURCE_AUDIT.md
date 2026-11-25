@@ -33,3 +33,19 @@ The latter three are conditional source-model lemmas, not full Props. 5/6. They 
 ## 5. Provenance
 
 The instructor requests the full actual AppliedModelingLib output. The original folder remains as it was copied. No upstream revision identifier has been established from the available historical logs, no new upstream workflow run is claimed, and no generated metadata or reviewer receipt is fabricated. To repair that component properly, continue the genuine run on its pinned upstream checkout and regenerate/copy the folder as instructed. Until then this independent audit provides useful evidence, not a replacement for the official run.
+
+## 6. Verified evidence and second independent proof campaign
+
+Run [45580422981](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45580422981), commit b83d77cd769cf9ecda7c59079c27a9d1d043f5e3: economics passed (six regressions, 20,000 seeded draws and all eleven failure counters zero); Lean sandbox passed (8316 jobs), all 12 discrete endpoints and five independent source-model endpoints passed the axiom whitelist, and the three frozen source-facing modules compiled byte-for-byte. In particular, no_labor_income_maximizer is verified against the actual old predicate. This is not the upstream paper-scoped check.
+
+A second candidate adds an explicit aggregate resource condition for alternative allocations:
+
+$$L(b)+r_b\mu\le Y(b),\quad r_b\ge0.$$
+
+At an efficient equilibrium a, if the aggregate income identity holds and rent is zero, then $L(a)=Y(a)$. Every resource-feasible b satisfies $L(b)\le Y(b)\le Y(a)=L(a)$ because compute is nonnegative. The candidate theorem resource_income_max_of_efficiency proves precisely this implication, not the income identity, zero rent from abundance, or efficiency. Deriving the identity from equilibrium requires measurable/integrable matching and market-clearing change of variables. The condition is an independent proposed repair; it has not been inserted into the generated Spec.
+
+The additional candidate wage-floor theorem follows from nonpositive AI-solver profits, positive team size and zero rent. It implies strict bottom gain if the capability exceeds the pre-AI bottom wage (pointwise at zero only). This does not establish a strict neighborhood, AI use, or all of Prop. 6.
+
+A second structural counterexample uses the fact that type 1 cannot be a human worker: its matched human solver must have knowledge strictly greater than 1, yet must lie in [0,1]. Change the matching only at 1. All feasibility conditions, zero-profit and nonpositive-profit conditions are preserved because the matching is used only on human workers. But Equivalent requires equality of matching at 1. The candidate no_unique_nonautonomous_equilibrium establishes that the old uniqueness predicate is false; it diagnoses the total-function translation, not economic nonuniqueness. A repair should compare matching on the active worker domain and handle null occupation boundaries explicitly.
+
+The six new endpoint proofs are pending CI at the new commit. No change to lean/ or claim of a proof of the original source propositions is made.

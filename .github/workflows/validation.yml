@@ -100,7 +100,10 @@ jobs:
           allowed = {'propext', 'Classical.choice', 'Quot.sound'}
           expected = {'feasible_wage_free', 'no_labor_income_maximizer',
                       'nonautonomous_rent_zero_of_idle', 'autonomous_rent_eq_of_independent',
-                      'nonautonomous_assisted_wage'}
+                      'nonautonomous_assisted_wage', 'resource_income_max_of_efficiency',
+                      'nonautonomous_wage_floor', 'bottom_strict_gain_of_capability',
+                      'feasible_matching_extension', 'equilibrium_matching_extension',
+                      'no_unique_nonautonomous_equilibrium'}
           found = {name.rsplit('.', 1)[-1] for name, _ in matches}
           if len(matches) != len(expected) or found != expected:
               raise SystemExit(f'Unexpected source-check endpoints: {found}')
@@ -108,7 +111,7 @@ jobs:
               deps = {a.strip() for a in axioms.split(',') if a.strip()}
               if not deps <= allowed:
                   raise SystemExit(f'{name}: unexpected axioms {deps - allowed}')
-          print('Five independent source-model audit endpoints checked.')
+          print('All independent source-model audit endpoints checked.')
           PY
       - uses: actions/upload-artifact@v4
         if: always()
