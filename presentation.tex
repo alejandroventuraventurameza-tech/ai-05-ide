@@ -160,13 +160,20 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{La derivación a mano}
+\begin{frame}{La derivación a mano (1/2): el salario del fondo}
   \centering
-  \IfFileExists{hand/discrete-derivation-01.jpg}{%
-    \includegraphics[height=0.72\textheight]{hand/discrete-derivation-01.jpg}}{%
-    \framebox[0.7\textwidth]{\rule{0pt}{0.5\textheight}pendiente: hand/discrete-derivation-01.jpg}}
-  \\[4pt]
-  \footnotesize El paso clave: los cinco casos que descartan $w_2^{*}>z_2$.
+  \includegraphics[page=2,height=0.78\textheight]{hand/discrete-derivation.pdf}
+  \\[2pt]
+  \footnotesize Pasos 1--3: $w_1=z_1$ por (A1), $r^{*}=a$, y
+  $w_1^{*}=\max\{z_1,\ a(1-h(1-z_1))\}$ desde la condición (N).
+\end{frame}
+
+\begin{frame}{La derivación a mano (2/2): el umbral y la identidad}
+  \centering
+  \includegraphics[page=3,height=0.78\textheight]{hand/discrete-derivation.pdf}
+  \\[2pt]
+  \footnotesize Paso 4: $w_1^{*}>w_1\iff a>\bar z$. \quad Paso 6:
+  $w_1^{*}-w_1=(w_2-w_2^{*})/n_1$.
 \end{frame}
 
 \begin{frame}{Lo computacional}

@@ -43,3 +43,6 @@ DNI*
 
 # latexmk scratch
 *.tmp
+
+# Files the Claude desktop app saves into the working folder
+Claude outputs/
