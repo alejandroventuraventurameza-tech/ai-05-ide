@@ -40,9 +40,13 @@ Run [45580422981](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/
 
 A second candidate adds an explicit aggregate resource condition for alternative allocations:
 
-$$L(b)+r_b\mu\le Y(b),\quad r_b\ge0.$$
 
-At an efficient equilibrium a, if the aggregate income identity holds and rent is zero, then $L(a)=Y(a)$. Every resource-feasible b satisfies $L(b)\le Y(b)\le Y(a)=L(a)$ because compute is nonnegative. The candidate theorem resource_income_max_of_efficiency proves precisely this implication, not the income identity, zero rent from abundance, or efficiency. Deriving the identity from equilibrium requires measurable/integrable matching and market-clearing change of variables. The condition is an independent proposed repair; it has not been inserted into the generated Spec.
+$$
+L(b)+r_b\mu\le Y(b),\quad r_b\ge0.
+$$
+
+
+At an efficient equilibrium a, if the aggregate income identity holds and rent is zero, then $`L(a)=Y(a)`$. Every resource-feasible b satisfies $`L(b)\le Y(b)\le Y(a)=L(a)`$ because compute is nonnegative. The candidate theorem resource_income_max_of_efficiency proves precisely this implication, not the income identity, zero rent from abundance, or efficiency. Deriving the identity from equilibrium requires measurable/integrable matching and market-clearing change of variables. The condition is an independent proposed repair; it has not been inserted into the generated Spec.
 
 The additional candidate wage-floor theorem follows from nonpositive AI-solver profits, positive team size and zero rent. It implies strict bottom gain if the capability exceeds the pre-AI bottom wage (pointwise at zero only). This does not establish a strict neighborhood, AI use, or all of Prop. 6.
 
