@@ -40,3 +40,14 @@ Continue the actual upstream run at the pinned revision, preserve its generated 
 ## Remaining gates
 
 Reproduce Python and sandbox Lean builds with CI at the new revision. Historical results are not independent new verification. Synchronize and recompile presentation/tutorial PDFs. Preserve original AI sessions, clearly distinguish summaries from verbatim transcripts, and document the student's reported model/deadline authorizations. Do not manufacture transcripts or audit results.
+
+## Executed numerical regression, 2026-11-25
+
+The rewritten endpoint module and six unittest cases were executed locally. All six passed. The candidate's positive boundary is 2/3. The bottom crossing uses bisection in candidate A when the pre-AI bottom wage is no greater than (2/3)(1-h); otherwise it uses the conditional AI-solver branch. The exercise does not establish the full post-AI equilibrium or universal threshold.
+
+| h | pre-AI bottom wage | piecewise crossing | branch | naive AI-assisted crossing |
+|---:|---:|---:|---|---:|
+| 0.50 | 0.357044 | 0.714087 | AI solver (conditional) | 0.714087 |
+| 0.74 | 0.172682 | 0.612875 | AI worker candidate | 0.664161 |
+
+This is a numerical counterexample to applying the AI-assisted wage formula indiscriminately in the endpoint exercise. It is not a source-level Lean theorem. The discrete driver now rejects nonpositive sample counts and returns nonzero for property failures; the seeded 20,000 draws still require independent execution at the new revision.

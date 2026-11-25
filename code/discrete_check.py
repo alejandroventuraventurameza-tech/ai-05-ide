@@ -131,6 +131,8 @@ def draw():
     z = sorted(random.uniform(0.0, 0.99) for _ in range(3))
     if z[2] <= z[1] or z[1] <= z[0]:
         return None
+    if z[2] - z[0] <= 1e-6:
+        return None
     a = random.uniform(z[0], z[2] - 1e-6)          # (A0): z1 <= a < z3
     n1, n2, na = n_of(z[0], h), n_of(z[1], h), n_of(a, h)
     mu3 = random.uniform(0.05, 1.0)
@@ -141,6 +143,8 @@ def draw():
 
 
 def main(draws=20000):
+    if draws <= 0:
+        raise ValueError('draws must be positive')
     random.seed(0)
     failures = {"N pre": 0, "N aut": 0, "N non": 0, "threshold aut": 0,
                 "threshold non": 0, "identity": 0, "top prefers aut": 0, "top loses": 0,
@@ -196,7 +200,8 @@ def main(draws=20000):
     for k, v in failures.items():
         print(f"  {k:18s} failures: {v}")
     print("ALL PROPERTIES HOLD" if not any(failures.values()) else "SOME PROPERTY FAILED")
+    return 1 if any(failures.values()) else 0
 
 
 if __name__ == "__main__":
-    main(int(sys.argv[1]) if len(sys.argv) > 1 else 20000)
+    sys.exit(main(int(sys.argv[1]) if len(sys.argv) > 1 else 20000))
