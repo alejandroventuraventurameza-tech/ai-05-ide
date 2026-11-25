@@ -31,6 +31,9 @@ Under the paper's standing assumptions (continuous strictly positive density, ab
 
     python3 code/equilibrium.py
     python3 code/discrete_check.py
+    python3 -m unittest discover -s code -p 'test_*.py' -v
     cd extra/lean-sandbox && lake build
 
 Prior agent configurations and deviations are preserved in prompts.md; the instructor's extension and authorization of GPT-6 with xhigh for continuation are reported by the student.
+ 
+[GitHub Actions](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions) independently checks the Python endpoint calculations and discrete Lean sandbox. Its results do not certify the official AppliedModelingLib Specs.
