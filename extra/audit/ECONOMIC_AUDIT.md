@@ -51,3 +51,5 @@ The rewritten endpoint module and six unittest cases were executed locally. All 
 | 0.74 | 0.172682 | 0.612875 | AI worker candidate | 0.664161 |
 
 This is a numerical counterexample to applying the AI-assisted wage formula indiscriminately in the endpoint exercise. It is not a source-level Lean theorem. The discrete driver now rejects nonpositive sample counts and returns nonzero for property failures; the seeded 20,000 draws still require independent execution at the new revision.
+
+See [LEAN_SOURCE_AUDIT.md](LEAN_SOURCE_AUDIT.md) for the frozen source-model proof and defect audit and the independent CI compilation.

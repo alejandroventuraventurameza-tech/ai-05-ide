@@ -259,5 +259,5 @@ theorem mixed_firm_no_gain {k : ℕ} (t c : Fin k → ℝ) (z w M : ℝ)
 #print axioms IdeTalamas.Params.no_positive_profit_31
 #print axioms IdeTalamas.Params.no_positive_profit_one_layer
 #print axioms IdeTalamas.Params.no_positive_profit_same_type
-#print axioms IdeTalamas.Params.affine_le_of_le
-#print axioms IdeTalamas.Params.mixed_firm_no_gain
+#print axioms affine_le_of_le
+#print axioms mixed_firm_no_gain

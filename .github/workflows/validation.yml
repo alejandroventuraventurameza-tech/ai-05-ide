@@ -82,8 +82,38 @@ jobs:
                   raise SystemExit(f'{name}: unexpected axioms {deps - allowed}')
           print('All 12 named theorem endpoints use only allowed Lean foundations.')
           PY
+      - name: Compile independent checks against the frozen generated model
+        run: |
+          set -o pipefail
+          mkdir -p IT25KnowledgeEconomy .lake/build/lib/lean/IT25KnowledgeEconomy
+          for f in SourceModel Assumptions PaperInterface; do
+            cp "../../lean/$f.lean" "IT25KnowledgeEconomy/$f.lean"
+            cmp "../../lean/$f.lean" "IT25KnowledgeEconomy/$f.lean"
+            lake env lean -o ".lake/build/lib/lean/IT25KnowledgeEconomy/$f.olean" "IT25KnowledgeEconomy/$f.lean"
+          done
+          lake env lean SourceChecks.lean | tee source-checks.log
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          log = Path('source-checks.log').read_text()
+          matches = re.findall(r"'([^']+)' (?:depends on axioms: \[([^\]]*)\]|does not depend on any axioms)", log, re.S)
+          allowed = {'propext', 'Classical.choice', 'Quot.sound'}
+          expected = {'feasible_wage_free', 'no_labor_income_maximizer',
+                      'nonautonomous_rent_zero_of_idle', 'autonomous_rent_eq_of_independent',
+                      'nonautonomous_assisted_wage'}
+          found = {name.rsplit('.', 1)[-1] for name, _ in matches}
+          if len(matches) != len(expected) or found != expected:
+              raise SystemExit(f'Unexpected source-check endpoints: {found}')
+          for name, axioms in matches:
+              deps = {a.strip() for a in axioms.split(',') if a.strip()}
+              if not deps <= allowed:
+                  raise SystemExit(f'{name}: unexpected axioms {deps - allowed}')
+          print('Five independent source-model audit endpoints checked.')
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: discrete-lean-axioms
-          path: extra/lean-sandbox/lean-axioms.log
+          path: |
+            extra/lean-sandbox/lean-axioms.log
+            extra/lean-sandbox/source-checks.log
