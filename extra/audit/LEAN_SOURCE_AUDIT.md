@@ -49,3 +49,7 @@ The additional candidate wage-floor theorem follows from nonpositive AI-solver p
 A second structural counterexample uses the fact that type 1 cannot be a human worker: its matched human solver must have knowledge strictly greater than 1, yet must lie in [0,1]. Change the matching only at 1. All feasibility conditions, zero-profit and nonpositive-profit conditions are preserved because the matching is used only on human workers. But Equivalent requires equality of matching at 1. The candidate no_unique_nonautonomous_equilibrium establishes that the old uniqueness predicate is false; it diagnoses the total-function translation, not economic nonuniqueness. A repair should compare matching on the active worker domain and handle null occupation boundaries explicitly.
 
 The six new endpoint proofs are pending CI at the new commit. No change to lean/ or claim of a proof of the original source propositions is made.
+
+## Verified second campaign
+
+[Run 45582527901](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45582527901) at 8bfc3f231f190edc44297e7d14076574067ce000 completed successfully: 12 discrete and 11 source-check theorem endpoints use only the three standard axioms. This verifies both translation defects and the conditional resource-income implication, not Props. 5–6. The frozen folder remains unchanged.

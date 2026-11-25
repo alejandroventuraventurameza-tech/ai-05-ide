@@ -445,7 +445,7 @@ saben menos que los humanos que supervisaba antes) y uno \emph{share} positivo. 
 muchos trabajadores, así que una caída pequeña en el salario de cada trabajador se multiplica por
 $n(\cdot)$ en el bolsillo del jefe.
 
-\section{El umbral, en forma cerrada}
+\section{El umbral condicionado al régimen}
 
 Aquí es donde nuestro ejemplo uniforme paga. Recuerda de la Parte~II que, cuando la IA es lo bastante
 buena como para usarse \emph{también como solucionadora}, los humanos menos sabios trabajan bajo un jefe
@@ -461,11 +461,19 @@ Con $G$ uniforme y $h=1/2$: $w(0)\approx0.357$, así que $\bar z_{AI}\approx0.71
 dentro de $\W=[0,\ 0.764]$, tal como exige la proposición.
 
 \begin{ojo}
-El umbral \eqref{eq:zbar} vale en el régimen en que la IA es solucionadora de los de abajo. Nuestras
-simulaciones (\texttt{code/equilibrium.py}) muestran que ese régimen empieza en $\zai=2/3$, y $2/3<0.714$,
-así que el umbral cae efectivamente dentro de ese régimen. Curiosamente, el valor $2/3$ aparece para
-todo $h$ que probamos ($h=0.2,\dots,0.74$) con $G$ uniforme: es una conjetura que vale la pena demostrar
-(y un buen candidato para Lean).
+La expresión \eqref{eq:zbar} exige que la IA supervise a los humanos menos conocedores
+en el punto de cruce. En el candidato A con $G$ uniforme, $z_1=\zai=a$, continuidad salarial y matching
+implican
+\[
+ z_2=\frac{a-ha^2/2}{1-h+ha},\qquad
+ z_2-a=\frac{ha(1-3a/2)}{1-h+ha}.
+\]
+La frontera positiva de ese candidato es $a=2/3$. Para $h=0.5$ el cruce condicional
+$0.714087$ cae en la rama asistida por IA. Para $h=0.74$ el cruce del ejercicio por ramas
+es $0.612875$, distinto de $w(0)/(1-h)=0.664161$.
+La Proposición~5 no afirma una fórmula cerrada universal. Los resultados de
+\texttt{code/equilibrium.py} verifican las ecuaciones del candidato y calculan salarios
+extremos condicionados al régimen; no resuelven la asignación continua completa.
 \end{ojo}
 
 \paragraph{Arriba, también en forma cerrada.} Si la IA se usa como trabajadora, el humano más sabio
@@ -474,7 +482,7 @@ supervisa agentes de IA y cobra
   w^{*}(1)=n(\zai)\,(1-\zai)=\frac{1}{h},
 \]
 \textbf{independientemente de $\zai$}. Con $h=1/2$ eso da $2$, contra $w(1)\approx1.578$ pre-IA. El de
-arriba gana siempre, y gana lo mismo con una IA mediocre que con una casi perfecta.
+arriba gana en esta configuración, y su salario es independiente de la capacidad mientras supervise IA. El resultado general de existencia de ganadores arriba es la Proposición~5 bajo sus hipótesis.
 
 \section{Tabla de resultados (uniforme, $h=1/2$)}
 
@@ -518,8 +526,8 @@ $n(z)$ trabajadores humanos gana cero:
 \]
 El salario es \emph{constante e igual a la capacidad de la IA}: el trabajador se queda con todo el
 producto esperado del equipo, porque el otro insumo no cuesta nada. Compáralo con el caso autónomo,
-donde el mismo trabajador cobraba $\zai(1-h)$: la diferencia es exactamente el costo de oportunidad de
-la IA, que con autonomía es positivo ($r^{*}=\zai$) y sin autonomía es cero.
+si el mismo trabajador está asistido por IA autónoma, cobra $\zai[1-h(1-z)]$; en $z=0$ la diferencia
+es $h\zai$, el costo por trabajador de remunerar al solucionador de IA.
 
 \begin{proposicion}[Prop.~6]
 Con IA no autónoma el equilibrio es único, eficiente, maximiza el ingreso laboral y $r^{\star}=0$. Además:
@@ -527,13 +535,19 @@ Con IA no autónoma el equilibrio es único, eficiente, maximiza el ingreso labo
   \item si $\zai\le w(0)$, la IA \textbf{no se usa} y todo queda como antes;
   \item si $\zai>w(0)$, solo los menos sabios la usan como solucionadora.
 \end{itemize}
-En todo caso: (1) el producto total es mayor con IA autónoma; (2) la IA no autónoma crea perdedores;
-(3) los menos sabios prefieren la IA no autónoma a cualquiera de las otras dos situaciones; (4) los más
-sabios prefieren la IA autónoma.
+En todo caso: (1) el producto total es estrictamente mayor con IA autónoma;
+(2) existe $z\in(0,1]$ con $w^\star(z)\le w(z)$, estrictamente si $\zai>w(0)$;
+(3) existe $\epsilon>0$ tal que para $z\in[0,\epsilon)$,
+$w^\star(z)\ge\max\{w(z),w^*(z)\}$, estrictamente si $\zai>w(0)$;
+(4) existe $\epsilon>0$ tal que para $z\in(1-\epsilon,1]$,
+$w^\star(z)\le w^*(z)$, estrictamente para $z\ne1$. Estas afirmaciones mantienen
+los supuestos de densidad positiva y continua, competencia, oportunidades y cómputo abundantes,
+$h<h_0$ y $\zai\in[0,1)$.
 \end{proposicion}
 
-\paragraph{De dónde sale $\zai>w(0)$.} Trivial con la fórmula anterior: el trabajador menos sabio acepta
-trabajar bajo un jefe de IA solo si eso le paga más que su salario pre-IA, es decir si $\zai>w(0)$. Con
+\paragraph{De dónde sale $\zai>w(0)$.} La fórmula anterior motiva el umbral: a renta nula la libre entrada de firmas con solucionador de IA
+impone $w^\star(z)\ge\zai$ para $z<\zai$. Si $\zai>w(0)$, entonces $w^\star(0)>w(0)$.
+Demostrar que se usa IA si y solo si se cruza ese umbral exige la caracterización del equilibrio. Con
 $h=1/2$ uniforme, el umbral es $0.357$.
 
 \section{La trampa de la semana}
@@ -548,7 +562,7 @@ autonomía de la IA, no su capacidad''}. Contrastémosla con las Proposiciones 5
  & \textbf{IA autónoma} & \textbf{IA no autónoma} \\ \midrule
 Precio del compute & $r^{*}=\zai$ & $r^{\star}=0$ \\
 Salario de los de abajo & $\zai(1-h)$ (si la IA los supervisa) & $\zai$ (si la usa) \\
-¿Ganadores abajo? & sí $\iff \zai>\dfrac{w(0)}{1-h}$ & sí $\iff \zai>w(0)$ \\[6pt]
+¿Ganadores abajo? & sí $\iff \zai>\bar z_{AI}$ & sí $\iff \zai>w(0)$ \\[6pt]
 Umbral con $h=1/2$ uniforme & $0.714$ & $0.357$ \\
 ¿Ganadores arriba? & siempre & no necesariamente \\
 Producto total & mayor & menor \\ \bottomrule
@@ -558,14 +572,15 @@ Producto total & mayor & menor \\ \bottomrule
 
 \paragraph{La respuesta.} \textbf{La condición para que haya ganadores abajo es de capacidad, no de
 autonomía}: en los dos regímenes es un umbral sobre $\zai$. Lo que hace la autonomía es \emph{mover el
-umbral} y \emph{escalar la ganancia}:
+umbral} y cambiar la ganancia. En el ejercicio uniforme con $h=1/2$, donde el
+cruce se encuentra en la rama de trabajadores asistidos por IA,
 \[
   \bar z_{AI}^{\text{autónoma}}=\frac{w(0)}{1-h}
   =\frac{1}{1-h}\cdot \bar z_{AI}^{\text{no autónoma}} .
 \]
-Con $h=1/2$ el umbral se duplica. Dicho de otro modo: quitar autonomía no crea ganadores abajo por sí
+En este caso el umbral se duplica; no es una identidad general. Dicho de otro modo: quitar autonomía no crea ganadores abajo por sí
 solo (si $\zai\le w(0)$ la IA ni siquiera se usa y no cambia nada), y poner autonomía no los elimina por
-sí sola (si $\zai>0.714$ los de abajo ganan igual). Lo correcto es:
+sí sola (si $\zai>0.714$ en este ejercicio los de abajo también ganan). Lo correcto es:
 
 \begin{quote}
 \emph{Si hay ganadores abajo depende de la capacidad; cuánto ganan y quién gana arriba depende de la
@@ -573,22 +588,46 @@ autonomía.}
 \end{quote}
 
 \paragraph{Dónde sí manda la autonomía.} En tres cosas: (i) el producto total, siempre mayor con IA
-autónoma; (ii) los más sabios, que siempre prefieren la autónoma; y (iii) el tamaño de la ganancia
-abajo, donde el factor $1-h$ es el costo de oportunidad de la IA. De ahí el \emph{tradeoff} regulatorio
+autónoma; (ii) los más sabios, cuya comparación favorece débilmente a la autónoma; y (iii) el tamaño de la ganancia
+abajo, donde si ambos regímenes usan IA como solucionadora, el costo por trabajador es $h(1-z)\zai$ en el autónomo. De ahí el \emph{tradeoff} regulatorio
 del paper: restringir la autonomía redistribuye hacia abajo, pero reduce el producto.
 
 \begin{ejercicio}
 Con $h=1/2$ uniforme y $\zai=0.5$: ¿ganan o pierden los de abajo con IA autónoma? ¿Y con IA no autónoma?
-Usa $w(0)=0.357$, $w^{*}(0)$ de la tabla de la Parte~III y $w^{\star}(0)=\zai$.
+Usa $w(0)=0.357$, la fórmula del candidato A de la Parte~III y $w^{\star}(0)=\zai$.
 \end{ejercicio}
 
 \begin{ejercicio}
-Muestra que el cociente entre los dos umbrales es $1/(1-h)$ y explica en palabras por qué el costo de
-oportunidad de la IA aparece ahí.
+Deriva el cociente $1/(1-h)$ cuando el cruce autónomo cae en la rama asistida por IA.
+Comprueba con $h=0.74$ por qué el cociente no es universal.
 \end{ejercicio}
 
 %======================================================================
 % Next: discrete two/three-type version for the hand derivation (Prop. 5) and Part IV (non-autonomous AI: Prop. 6 and the trap) come next.
 %======================================================================
 
+\section{Qué verificó Lean y qué debemos reparar}
+
+En la ejecución 45582527901 de GitHub Actions, doce teoremas del modelo discreto y once
+pruebas independientes sobre las definiciones de AppliedModelingLib superaron la auditoría
+axiomática sin \texttt{sorryAx}. Las proposiciones completas del continuo permanecen abiertas.
+
+\paragraph{Ingreso laboral.} Sea $L(a)=\int_0^1w_a(z)\,dG(z)$. En la traducción inicial
+una asignación sigue siendo factible al reemplazar su salario por la constante $L(a)+1$.
+La distribución tiene masa uno, por lo que $L(b)=L(a)+1$. Lean verifica que no existe
+maximizador de ese predicado. Una reparación independiente restringe el conjunto
+de comparación mediante $L(b)+r_b\mu\le Y(b)$ y $r_b\ge0$. Si el equilibrio $a$ es
+eficiente, tiene renta nula y satisface la identidad agregada, se sigue
+$L(b)\le Y(b)\le Y(a)=L(a)$. Esta implicación está verificada en Lean; la derivación
+de la identidad desde el matching y el vaciado aún no lo está.
+
+\paragraph{Unicidad.} La definición original de equivalencia exige que los matchings
+coincidan incluso fuera de la ocupación de trabajador humano. La alteración de $m(1)$
+no cambia ningún emparejamiento activo, puesto que no existe un solucionador con conocimiento
+mayor que uno. Lean verifica que la definición de unicidad original es falsa. Debemos
+comparar matching sobre el dominio activo y tratar las fronteras de ocupación adecuadamente.
+
+Estos resultados son contraejemplos a la traducción, no al artículo. El árbol original de
+\texttt{lean/} permanece intacto; los once teoremas se encuentran en
+\texttt{extra/lean-sandbox/SourceChecks.lean}.
 \end{document}

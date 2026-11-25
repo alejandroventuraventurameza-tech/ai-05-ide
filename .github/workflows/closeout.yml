@@ -1,0 +1,105 @@
+name: Repository 5 closeout artifacts
+on:
+  pull_request:
+    paths:
+      - 'presentation.tex'
+      - 'extra/tutorial/**'
+      - 'extra/audit/replay_aml.sh'
+      - 'lean/**'
+      - '.github/workflows/closeout.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  aml-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/checkout@v4
+        with:
+          repository: nikhgarg/AppliedModelingLib
+          ref: 2db7d108cd3a2cb10148974bb2a77856e7d87428
+          path: aml-replay
+      - name: Install elan
+        run: |
+          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Replay required paper-scoped fast check
+        run: |
+          set -o pipefail
+          bash extra/audit/replay_aml.sh aml-replay 2>&1 | tee aml-replay.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: aml-historical-replay
+          path: aml-replay.log
+  documents:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'work/repository5-economic-audit-20261125'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install TeX and rendering tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern poppler-utils python3-pil
+      - name: Build source-synchronized PDFs
+        run: |
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error presentation.tex
+          (cd extra/tutorial && latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error tutorial-ide-talamas.tex)
+          pdfinfo presentation.pdf
+          pdfinfo extra/tutorial/tutorial-ide-talamas.pdf
+          if grep -E 'Overfull \\hbox|Overfull \\vbox|undefined references|LaTeX Error' presentation.log; then
+            echo "Presentation has layout or reference warnings"
+            exit 1
+          fi
+          mkdir -p extra/audit/qa-render
+          pdftoppm -scale-to 960 -png presentation.pdf extra/audit/qa-render/slide
+          pdftoppm -scale-to 800 -png extra/tutorial/tutorial-ide-talamas.pdf extra/audit/qa-render/tutorial
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageOps, ImageDraw
+          root = Path('extra/audit/qa-render')
+          for stem in ('slide', 'tutorial'):
+              paths = sorted(root.glob(stem+'-*.png'))
+              for start in range(0, len(paths), 4):
+                  subset = paths[start:start+4]
+                  w,h = (640,370) if stem=='slide' else (470,650)
+                  canvas = Image.new('RGB',(2*w,2*(h+25)), 'white')
+                  draw = ImageDraw.Draw(canvas)
+                  for j,path in enumerate(subset):
+                      img = Image.open(path).convert('RGB')
+                      img.thumbnail((w-10,h))
+                      x,y=(j%2)*w,(j//2)*(h+25)
+                      canvas.paste(img,(x+(w-img.width)//2,y))
+                      draw.text((x+10,y+h+4),path.stem,fill='black')
+                  canvas.save(root/f'{stem}-sheet-{start//4+1:02d}.jpg',quality=85)
+              for path in paths:
+                  path.unlink()
+          PY
+          sha256sum presentation.tex presentation.pdf extra/tutorial/tutorial-ide-talamas.tex extra/tutorial/tutorial-ide-talamas.pdf > extra/audit/qa-render/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compiled-documents
+          path: |
+            presentation.pdf
+            presentation.log
+            extra/tutorial/tutorial-ide-talamas.pdf
+            extra/tutorial/tutorial-ide-talamas.log
+            extra/audit/qa-render/
+      - name: Publish compiled review candidate to separate work branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add presentation.pdf extra/tutorial/tutorial-ide-talamas.pdf extra/audit/qa-render
+          git commit -m "build: compile and render PDF review candidates"
+          git push origin "HEAD:refs/heads/work/repository5-pdf-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
