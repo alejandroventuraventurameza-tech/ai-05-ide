@@ -22,7 +22,7 @@
 
 ## Submission procedure
 
-Merge PR #3 through GitHub, not a direct write to main. Submit the public repository URL by email in accordance with the extension reported by the student. No email or professor-issue comment has been sent by this workflow.
+PR #3 was merged through GitHub at `c4405559f4cbab409c7d358142003eac9f44fadc`. The documentation-only rendering repair PR #4 was also merged. The [post-merge validation](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45587068202) succeeded at the substantive integration commit. Submit the public repository URL by email in accordance with the extension reported by the student. No email or professor-issue comment has been sent by this workflow.
 
 ## Source/PDF checksums
 

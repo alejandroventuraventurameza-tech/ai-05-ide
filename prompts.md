@@ -1,13 +1,12 @@
 # prompts.md
 
-Raw record of the AI sessions behind this repository. Two separate runs:
+Record of the AI sessions behind this repository, combining surviving prompts and summaries of their relevant responses. It is not a complete raw transcript. Two historical runs:
 
 1. **Claude (Cowork) session — repository setup, tutorial, discrete derivation, Lean sandbox.**
    Logged below, in order, with the prompts as given and a note of what each produced.
 2. **AppliedModelingLib run — GPT-5.6 Sol, reasoning effort `xhigh`.** Appended in the last section.
 
-Prompts are in Spanish, as the session was conducted. Nothing here is reconstructed after the fact:
-the errors recorded in §4 are the ones the session actually made and corrected.
+The Claude prompts are in Spanish; the AppliedModelingLib prompts use the language of the original workflow. Quoted prompts retain their surviving wording and omissions are indicated where applicable. Summaries are distinct from verbatim records; missing historical responses have not been fabricated. The errors recorded in §4 are reported from the historical session.
 
 ---
 
@@ -34,9 +33,9 @@ The tutorial was written section by section: Part I (question, model, pre-AI ben
 (Proposition 2 and the autonomous-AI equilibrium, Propositions 3 and 4), Parts III and IV
 (Proposition 5, Proposition 6 and the two-dimensional taxonomy).
 
-The uniform case with $h=1/2$ was solved in closed form and checked against the paper:
-$\tilde z=3-\sqrt5$, $w(0)\approx0.357$, $w(1)\approx1.578$, and post-AI $w^{*}(0)\approx0.267$ and
-$w^{*}(1)=2$, which are the values printed in Figures 3, 4 and 5.
+The uniform case with $`h=1/2`$ was solved in closed form and checked against the paper:
+$`\tilde z=3-\sqrt{5}`$, $`w(0)\approx0.357`$, $`w(1)\approx1.578`$, and post-AI $`w^{\ast}(0)\approx0.267`$ and
+$`w^{\ast}(1)=2`$, which are the values printed in Figures 3, 4 and 5.
 
 ## 3. The hand derivation
 
@@ -57,15 +56,15 @@ This section is the honest part of the record.
 **Error 1 — a missing firm configuration (caught by hand).** The first version of the derivation
 computed wages from the zero-profit condition of the firms assumed active, without checking that no
 *other* configuration earned positive profit. Under non-autonomous AI it therefore reported the top
-type's wage as $n(z_1)(z_3-z_{AI})$, ignoring that the same solver could hire type-2 workers at wage
-$z_2$. Corrected by adding condition (N) to the definition of equilibrium and restating every wage as
+type's wage as $`n(z_1)(z_3-z_{AI})`$, ignoring that the same solver could hire type-2 workers at wage
+$`z_2`$. Corrected by adding condition (N) to the definition of equilibrium and restating every wage as
 a maximum over admissible configurations.
 
 **Error 2 — an inadmissible branch (caught by the randomized test).** With wages restated as maxima,
 `code/discrete_check.py` was written to enumerate all configurations over random draws of primitives.
-It failed on about one draw in five: when $a<z_1$, the least knowledgeable type can supervise AI
-workers, a configuration the wage formula omitted. Corrected by assumption (A0), $z_1\le a<z_3$,
-including the boundary case $z_1=a$, where that configuration's profit is $-w_1^{*}\le0$.
+It failed on about one draw in five: when $`a<z_1`$, the least knowledgeable type can supervise AI
+workers, a configuration the wage formula omitted. Corrected by assumption (A0), $`z_1\le a<z_3`$,
+including the boundary case $`z_1=a`$, where that configuration's profit is $`-w_1^{\ast}\le0`$.
 
 The lesson recorded for the presentation: the verbal argument sounded convincing in both cases. What
 found the errors was enumeration — first by hand, then by machine.
