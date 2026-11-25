@@ -1,114 +1,39 @@
-# ai-05-ide — Ide & Talamàs (2025), *Artificial Intelligence in the Knowledge Economy*
+# ai-05-ide — Ide & Talamàs (2025)
 
-Repository: <https://github.com/alejandroventuraventurameza-tech/ai-05-ide>
+Repository: <https://github.com/alejandroventuraventurameza-tech/ai-05-ide>  
+Course: Artificial Intelligence and Economic Modeling, UP 2026-II; [issue #4](https://github.com/alexanderquispe/AI-Econ-Modeling/issues/4).
 
-Weekly repository 5 for *Artificial Intelligence and Economic Modeling* (UP 2026-II), issue
-[#4](https://github.com/alexanderquispe/AI-Econ-Modeling/issues/4).
+**Source:** Ide, E. & Talamàs, E. (2025), *Artificial Intelligence in the Knowledge Economy*, JPE 133(12), 3762–3800, [DOI](https://doi.org/10.1086/737233). We use [arXiv:2312.05481v11](https://arxiv.org/abs/2312.05481v11).
 
-**Paper.** Ide, E. & Talamàs, E. (2025). *Artificial Intelligence in the Knowledge Economy.*
-Journal of Political Economy 133(12), 3762–3800. DOI [10.1086/737233](https://doi.org/10.1086/737233).
-**Version read: arXiv:2312.05481v11 (25 February 2025, 35 pp.)**, which is the version the Lean run pins.
+## Question and agent's problem
 
----
+Who gains from AI along the knowledge distribution, and how do capability and autonomy interact? Humans have knowledge $z\in[0,1]$ distributed according to $G$. A worker solves a uniformly distributed problem with probability $z$; a solver spends $h\in(0,1)$ units of time on each referral. The team size is $n(z)=1/[h(1-z)]$ for $z<1$. A firm choosing a human solver $s>z$ maximizes $n(z)[s-w(z)]-w(s)$; at an interior differentiable optimum $s=m(z)$, $w'(m(z))=n(z)$. AI agents have knowledge $a=z_{AI}$; autonomy permits production work as well as advice, whereas non-autonomous AI can only advise.
 
-## The question
+## Main results and conditions
 
-When a technology can do cognitive work, who gains and who loses along the knowledge distribution —
-and does the answer depend on how *capable* the AI is, or on whether it can work *autonomously*?
+Under the paper's standing assumptions (continuous strictly positive density, abundant production opportunities, competitive markets, $h<h_0$ so no independent producers before AI, $a\in[0,1)$, and compute abundant relative to human time):
 
-The paper's contribution is to answer this inside an organization: AI does not just replace tasks, it
-changes **who works with whom**, and the wage effects run through that reassignment.
+**Autonomous AI (Props. 2 and 5, §§4–5.2).** Unique efficient equilibrium, compute rent $r^*=a$, and $w^*(a)=a<w(a)$. The winners lie at the extremes. The bottom winner set $B$ is nonempty iff $a>\bar a$, for a threshold $\bar a\in\operatorname{int}W$ (pre-AI workers). The top winner set $T$ is nonempty for every admissible $a$. For humans assisted by AI, $w^*(z)=a(1-1/n(z))$; thus $w^*(0)=a(1-h)$ when the bottom is in that regime. A universal closed form for the threshold is not claimed without establishing the equilibrium regime at the crossing.
 
-## The agent's problem
+**Non-autonomous AI (Prop. 6, §6).** Unique efficient equilibrium maximizing labor income, $r^\star=0$. If $a\le w(0)$, AI is unused and pre-AI occupations and wages are preserved. Otherwise only the least knowledgeable use AI, with nonempty assisted-worker, human-worker and human-solver sets. Total output is strictly below the autonomous regime. There is some $z\in(0,1]$ with $w^\star(z)\le w(z)$, strictly so if AI is used. In a neighborhood of zero, $w^\star(z)\ge\max\{w(z),w^*(z)\}$, strictly if AI is used; near one, $w^\star(z)\le w^*(z)$, strictly for $z\ne1$.
 
-A unit mass of humans with knowledge $z\in[0,1]$, distributed according to $G$. Each production
-opportunity carries a problem of difficulty $x\sim U[0,1]$; knowledge $z$ is the probability of solving
-it alone. Firms have at most two layers. In a two-layer firm each unsolved problem costs the solver
-$h\in(0,1)$ units of time, so a solver supervises
+**The trap:** bottom gains require a capability threshold in both regimes; autonomy changes feasible occupations and the opportunity cost of compute. Do not infer that non-autonomous AI always creates strict winners or that every top human loses relative to no AI.
 
-$$n(z)=\frac{1}{h(1-z)}$$
+## Our work and evidence
 
-workers of knowledge $z$. A firm choosing a solver $s$ for a team of workers $z$ solves
+- [Three-type derivation](extra/derivation/discrete-three-type.tex) and [handwritten proof](hand/discrete-derivation.pdf). Under (A0)–(A3), the discrete autonomous threshold is $z_1/[1-h(1-z_1)]$; if $a=z_2$ and the relevant gain/rent conditions hold, $w_1^*-w_1=(w_2-w_2^*)/n(z_1)$. The discrete model permits pre-AI independent producers and cannot reproduce Prop. 5's universal top-winner result. Setting $z_1=0$ does not recover the continuum threshold.
+- [Python](code/): uniform-distribution endpoint calculations and seeded three-type property checks. Numerical evidence is not a general proof.
+- [Lean sandbox](extra/lean-sandbox/): 12 theorem endpoints for discrete algebra, independently compiled and axiom-audited in [run 45580422981](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45580422981). Feasible allocations and source fidelity are not certified by those theorems.
+- [AppliedModelingLib folder](lean/): source-facing Specs for Props. 5–6 compile; the prescribed fast check also passed on a pinned compatible historical checkout ([run 45584755327](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45584755327), 8315 jobs, exit 0); proofs and semantic review remain open; eleven independent checked lemmas include formal counterexamples to the generated labor-income objective and uniqueness predicate, and a conditional resource-budget repair ([run 45582527901](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45582527901)). See [Lean audit](extra/audit/LEAN_SOURCE_AUDIT.md). The generated status metadata is stale. This is a partial run, not a verified formalization of either proposition.
+- [Presentation](presentation.tex), [tutorial](extra/tutorial/), [prompts](prompts.md), [checklist](REQUIREMENTS.md) and [source/validation audit](extra/audit/ECONOMIC_AUDIT.md). The [17-slide deck PDF](presentation.pdf) and [13-page tutorial PDF](extra/tutorial/tutorial-ide-talamas.pdf) were rebuilt and visually reviewed after the final corrections ([run 45586471082](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45586471082)). See the [closeout report](extra/audit/CLOSEOUT.md).
 
-$$\max_{s}\ n(z)\,[\,s-w(z)\,]-w(s),$$
+## Reproduce
 
-whose first-order condition, $w'(m(z))=n(z)$, says that **a solver's marginal wage is the size of the
-team she supervises**. AI turns compute into agents of knowledge $z_{AI}$ that are perfect substitutes
-for a human of that knowledge; compute is abundant relative to human time.
+    python3 code/equilibrium.py
+    python3 code/discrete_check.py
+    python3 -m unittest discover -s code -p 'test_*.py' -v
+    cd extra/lean-sandbox && lake build
 
-## The main result, with its conditions
-
-Under $G$ with continuous, strictly positive density, $h<h_0$ (no independent producers before AI),
-$z_{AI}\in[0,1)$ and compute abundant relative to time:
-
-**Autonomous AI (Propositions 2 and 5).** The equilibrium is unique and efficient, the rental rate of
-compute is $r^{*}=z_{AI}$, and the human with knowledge $z_{AI}$ always loses. Winners are located at
-the two extremes of the distribution. There are **always winners at the top**; there are winners at the
-bottom **if and only if $z_{AI}>\bar z_{AI}$**, with $\bar z_{AI}$ in the interior of the pre-AI worker
-set. Two closed forms carry the result: the top human earns $w^{*}(1)=n(z_{AI})(1-z_{AI})=1/h$,
-independently of $z_{AI}$, and the bottom human, once AI supervises him, earns
-$w^{*}(0)=z_{AI}(1-h)$.
-
-**Non-autonomous AI (Proposition 6).** The equilibrium is unique and efficient, $r^{\star}=0$, and AI
-is used **iff $z_{AI}>w(0)$**. Then total output is strictly lower than with autonomous AI; the least
-knowledgeable are better off than under either autonomous AI or no AI; the most knowledgeable are worse
-off than under autonomous AI.
-
-### This week's trap
-
-The one-line gloss — *"the distributional effect is driven by AI autonomy, not capability"* — collapses
-a two-dimensional taxonomy. In **both** regimes the existence of winners at the bottom is a
-**capability** threshold:
-
-| | autonomous AI | non-autonomous AI |
-|---|---|---|
-| rental rate of compute | $r^{*}=z_{AI}$ | $r^{\star}=0$ |
-| wage at the bottom | $z_{AI}(1-h)$ | $z_{AI}$ |
-| winners at the bottom | iff $z_{AI}>w(0)/(1-h)$ | iff $z_{AI}>w(0)$ |
-| winners at the top | always | not necessarily |
-| total output | higher | lower |
-
-Autonomy does not decide *whether* there are winners at the bottom; it moves the threshold by the
-factor $1/(1-h)$ — the opportunity cost of the AI — and scales the size of the gain. Removing autonomy
-creates no winners at the bottom when $z_{AI}\le w(0)$, because then the AI is not used at all. What
-autonomy does decide is total output, the fate of the top, and how much the bottom gains.
-
----
-
-## What this repository adds
-
-- **`extra/tutorial/`** — a four-part walk through the model (question, pre-AI benchmark, autonomous AI,
-  Propositions 5 and 6), with the uniform case solved in closed form. Our $w^{*}(0)$ and $w^{*}(1)$
-  reproduce the values in Figures 4 and 5 of the paper.
-- **`extra/derivation/`** — a **discrete three-type version** of the model, stated as a competitive
-  equilibrium and proved: the equilibrium wages, the two capability thresholds, and an exact identity,
-  $w_1^{*}-w_1=(w_2-w_2^{*})/n(z_1)$, saying that the rent lost by the automated type is shared among
-  the workers it used to supervise. It also proves where finite types *cannot* reproduce the paper.
-- **`code/`** — an equilibrium solver for the continuum (standard library only) and a randomized
-  property test that checks, over 20 000 draws of primitives, that no admissible firm configuration
-  earns positive profit and that every corollary holds.
-- **`extra/lean-sandbox/`** — our own Lean 4 + Mathlib formalization of the discrete results
-  (`IdeTalamas/Discrete.lean`), building with exit code 0 and with an axiom audit showing no `sorryAx`.
-- **`lean/`** — the AppliedModelingLib paper folder, copied exactly as generated. The run completed
-  the source and audit phase and stopped at a quota limit before the formalization phase, so the Lean
-  files there are templates; `prompts.md` §6 records the exact blocker and the check output.
-- **`hand/`** — the derivation written by hand.
-
-## Reproducing
-
-```bash
-python3 code/equilibrium.py            # continuum equilibria and thresholds
-python3 code/discrete_check.py         # randomized property test
-cd extra/lean-sandbox && lake build    # Lean formalization + axiom audit
-cd extra/tutorial   && latexmk -pdf tutorial-ide-talamas.tex
-cd extra/derivation && latexmk -pdf discrete-three-type.tex
-```
-
-## What Lean verifies, and what it does not
-
-Lean checks that the discrete statements follow from the stated hypotheses: the monotonicity lemma
-behind the result on the most knowledgeable type, the capability threshold as an equivalence, the
-share-effect identity, and the no-positive-profit condition for each admissible firm configuration.
-It does **not** check that the discrete model is a faithful translation of the paper, nor the two
-results that are proved on paper only: that pure firm configurations are without loss of generality,
-and the existence of a feasible allocation. Those limits are stated in the derivation itself.
+Prior agent configurations and deviations are preserved in prompts.md; the instructor's extension and authorization of GPT-6 with xhigh for continuation are reported by the student.
+ 
+[GitHub Actions](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions) independently checks the Python endpoint calculations, discrete Lean sandbox, source-model audits, and historical upstream replay. Its results do not certify the official AppliedModelingLib Specs.

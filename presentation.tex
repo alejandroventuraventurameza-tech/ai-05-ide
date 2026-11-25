@@ -51,17 +51,17 @@
   Conocimiento $z\in[0,1]$ con distribución $G$; dificultad $x\sim U[0,1]$, así que $z$ es la
   probabilidad de resolver un problema solo. Cada consulta cuesta $h$ del tiempo del solucionador:
   \[
-    n(z)=\frac{1}{h(1-z)}\quad\text{trabajadores por solucionador.}
+    n(z)=\frac{1}{h(1-z)},\quad z<1\quad\text{(trabajadores por solucionador).}
   \]
   Una firma de dos capas elige a su solucionador:
   \[
-    \max_{s}\ n(z)\,[\,s-w(z)\,]-w(s)
+    \max_{s\in(z,1]}\ n(z)\,[\,s-w(z)\,]-w(s)
     \qquad\Longrightarrow\qquad
     \boxed{\,w'(m(z))=n(z)\,}
   \]
   \begin{block}{Léelo así}
     El salario marginal de un jefe \emph{es} el tamaño de su equipo: su conocimiento se aplica a
-    $n(z)$ problemas a la vez. De ahí salen la convexidad del salario y la estratificación
+    $n(z)$ problemas a la vez. En una solución interior diferenciable, esta condición ayuda a explicar la convexidad salarial y la estratificación
     $\W\preceq\mathcal I\preceq\Sset$.
   \end{block}
 \end{frame}
@@ -85,23 +85,27 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{El resultado principal, con todas sus condiciones}
-  Bajo $g$ continua y positiva, $h<h_0$, $\zai\in[0,1)$ y compute abundante:
-  \vfill
-  \textbf{IA autónoma (Prop. 2 y 5).} Equilibrio único y eficiente; los ganadores están en los extremos:
-  \[
-    w^{*}(1)=n(\zai)(1-\zai)=\frac1h \ \text{(no depende de }\zai\text{)},
-    \qquad
-    w^{*}(0)=\zai(1-h).
-  \]
-  \[
-    \text{Ganadores arriba: \textbf{siempre}.}\qquad
-    \text{Ganadores abajo: \textbf{si y solo si }}\zai>\bar z_{AI}=\frac{w(0)}{1-h}.
-  \]
-  \vfill
-  \textbf{IA no autónoma (Prop. 6).} $r^{\star}=0$; se usa si y solo si $\zai>w(0)$; el producto total
-  es menor; los de abajo están mejor que en cualquiera de los otros dos escenarios; los de arriba,
-  peor que con IA autónoma.
+\begin{frame}{El resultado principal: condiciones y resultados}
+  \small
+  Supuestos del artículo: densidad $g$ continua y positiva, oportunidades de producción abundantes,
+  competencia, $0<h<h_0$, $\zai\in[0,1)$ y cómputo abundante.
+  \begin{block}{IA autónoma: Proposiciones 2 y 5}
+    Equilibrio único y eficiente; $r^*=\zai$. Si $B$ y $T$ son los conjuntos de ganadores
+    por debajo y por encima de $\zai$,
+    \[
+      B\ne\varnothing\iff\zai>\bar z_{AI},\quad
+      \bar z_{AI}\in\operatorname{int}\W;
+      \qquad T\ne\varnothing.
+    \]
+    Si la IA supervisa al tipo inferior, $w^*(0)=\zai(1-h)$; si el superior supervisa IA,
+    $w^*(1)=1/h$. Son fórmulas de régimen.
+  \end{block}
+  \begin{block}{IA no autónoma: Proposición 6}
+    Equilibrio único y eficiente, maximiza ingreso laboral, $r^\star=0$.
+    Se usa si y solo si $\zai>w(0)$; si no, se preservan salarios y ocupaciones.
+    Existe $z\in(0,1]$ con $w^\star(z)\le w(z)$ (estricto si se usa IA).
+    El producto total es estrictamente menor que con IA autónoma.
+  \end{block}
 \end{frame}
 
 \begin{frame}{Por qué: dos efectos que se pelean}
@@ -119,50 +123,53 @@
   $n(\cdot)$. Abajo depende de $\zai$, y de ahí sale el umbral.
 \end{frame}
 
-\begin{frame}{La trampa de la semana}
-  \begin{block}{La frase que circula}
-    ``El efecto distributivo lo determina la autonomía de la IA, no su capacidad.''
-  \end{block}
-  \vfill
+\begin{frame}{La trampa: capacidad y autonomía}
+  \small
   \centering
   \begin{tabular}{@{}lcc@{}}
     \toprule
-     & \textbf{IA autónoma} & \textbf{IA no autónoma} \\ \midrule
-    Costo de oportunidad de la IA & $r^{*}=\zai$ & $r^{\star}=0$ \\
-    Salario de los de abajo & $\zai(1-h)$ & $\zai$ \\
-    ¿Ganadores abajo? & sii $\zai>\dfrac{w(0)}{1-h}$ & sii $\zai>w(0)$ \\[8pt]
-    ¿Ganadores arriba? & siempre & no necesariamente \\
+     & \textbf{Autónoma} & \textbf{No autónoma} \\ \midrule
+    Renta del cómputo & $\zai$ & $0$ \\
+    Salario inferior si usa IA & $\zai(1-h)$ & $\zai$ \\
+    Ganadores estrictos abajo & $\zai>\bar z_{AI}$ & $\zai>w(0)$ \\
+    Ganadores arriba vs.\ pre-IA & siempre & no necesariamente \\
     Producto total & mayor & menor \\ \bottomrule
   \end{tabular}
   \vfill
-  \begin{alertblock}{La corrección}
-    \textbf{Si} hay ganadores abajo es una condición de \emph{capacidad}, en los dos regímenes. La
-    autonomía mueve el umbral en el factor $1/(1-h)$ y decide cuánto ganan, quién gana arriba y el
-    producto total.
+  \begin{alertblock}{No son dimensiones sustitutivas}
+    Los umbrales son de capacidad. La autonomía cambia el conjunto de organizaciones
+    factibles y el precio de la IA. El umbral autónomo no tiene la fórmula universal
+    $w(0)/(1-h)$: depende del régimen en el que ocurra el cruce.
   \end{alertblock}
+  \footnotesize Prop.\ 6: en un entorno de cero, $w^\star\ge\max\{w,w^*\}$ (estricto si se usa IA);
+  cerca de uno, $w^\star\le w^*$ (estricto para $z\ne1$).
 \end{frame}
 
-\begin{frame}{Lo que hicimos: una versión discreta, demostrada}
-  Tres tipos $z_1<z_2<z_3$, masas $\mu_i$, IA con $a=z_2$. Equilibrio competitivo con tres
-  condiciones: (N) ninguna firma con beneficio positivo, (Z) beneficio cero en las activas,
-  (M) vaciado de mercados.
+\begin{frame}{Nuestra derivación: tres tipos}
+  \small
+  $0\le z_1<z_2<z_3<1$, masas $\mu_i>0$, $0<h<1$; $n_i=n(z_i)$,
+  $n_a=n(a)$, cómputo $\mu$ y capacidad $a$.
+  \[
+    \begin{aligned}
+      \text{(A0)}&\quad z_1\le a<z_3,\\
+      \text{(A1)}&\quad \mu_1>n_1(\mu_2+\mu_3),\\
+      \text{(A2)}&\quad \mu_2>n_2\mu_3,\\
+      \text{(A3)}&\quad \mu>\mu_1/n_1+\mu_2/n_2+n_a(\mu_2+\mu_3).
+    \end{aligned}
+  \]
   \begin{itemize}
-    \item \textbf{Lema 1}: el beneficio de una firma mixta es afín en las fracciones de tiempo sobre el
-      símplex, luego basta enumerar configuraciones puras.
-    \item \textbf{Teoremas 1--3}: los salarios son únicos y son \emph{máximos} sobre configuraciones.
-    \item \textbf{Corolario 1}: ganadores abajo $\iff a>\bar z=z_1/(1-h(1-z_1))$. Con $z_1=0$ se
-      recupera el umbral del continuo.
-    \item \textbf{Corolario 3}: identidad exacta
-      \[
-        w_1^{*}-w_1=\frac{w_2-w_2^{*}}{n(z_1)} ,
-      \]
-      la renta que pierde el tipo automatizado, repartida entre los $n(z_1)$ trabajadores de su equipo.
+    \item Enumerar firmas puras: beneficio afín en las fracciones de tiempo.
+    \item Salarios: máximos de ramas admisibles; no beneficio positivo, beneficio cero y vaciado.
+    \item Umbral: $w_1^*>w_1\iff a>z_1/[1-h(1-z_1)]$.
+    \item Con $a=z_2$ y ganancia estricta inferior, identidad
+      $w_1^*-w_1=(w_2-w_2^*)/n_1$.
   \end{itemize}
+  \footnotesize El discreto tiene independientes antes de IA; $z_1=0$ no recupera el continuo.
 \end{frame}
 
 \begin{frame}{La derivación a mano (1/2): el salario del fondo}
   \centering
-  \includegraphics[page=2,height=0.78\textheight]{hand/discrete-derivation.pdf}
+  \includegraphics[page=2,height=0.69\textheight]{hand/discrete-derivation.pdf}
   \\[2pt]
   \footnotesize Pasos 1--3: $w_1=z_1$ por (A1), $r^{*}=a$, y
   $w_1^{*}=\max\{z_1,\ a(1-h(1-z_1))\}$ desde la condición (N).
@@ -170,25 +177,31 @@
 
 \begin{frame}{La derivación a mano (2/2): el umbral y la identidad}
   \centering
-  \includegraphics[page=3,height=0.78\textheight]{hand/discrete-derivation.pdf}
+  \includegraphics[page=3,height=0.69\textheight]{hand/discrete-derivation.pdf}
   \\[2pt]
   \footnotesize Paso 4: $w_1^{*}>w_1\iff a>\bar z$. \quad Paso 6:
-  $w_1^{*}-w_1=(w_2-w_2^{*})/n_1$.
+  $w_1^{*}-w_1=(w_2-w_2^{*})/n_1$ si $a=z_2$ y $w_1^*>w_1$.
 \end{frame}
 
-\begin{frame}{Lo computacional}
-  \begin{itemize}
-    \item \texttt{code/equilibrium.py}: resuelve el equilibrio del continuo, reproduce los valores de
-      las Figuras 3, 4 y 5, y encuentra que la IA pasa a usarse como solucionadora en $\zai=2/3$ para
-      todo $h$ probado (conjetura nuestra, no del paper).
-    \item \texttt{code/discrete\_check.py}: test de propiedades sobre \textbf{20\,000} sorteos
-      aleatorios de primitivas. En cada uno enumera las configuraciones admisibles y verifica (N), (Z),
-      los dos umbrales, la identidad y la factibilidad de la asignación.
-  \end{itemize}
-  \vfill
-  \begin{block}{Para qué sirvió}
-    No para ilustrar, sino para \emph{encontrar un error}. Ver la penúltima diapositiva.
-  \end{block}
+\begin{frame}{Cálculos uniformes: el cruce depende del régimen}
+  \small
+  En el candidato A (IA como trabajadora, no solucionadora), $a=\zai=z_1$.
+  Continuidad salarial y matching implican
+  \[
+    z_2=\frac{a-ha^2/2}{1-h+ha},
+    \qquad z_2-a=\frac{ha(1-3a/2)}{1-h+ha}.
+  \]
+  Su frontera positiva es $a=2/3$; no es una prueba del régimen complementario.
+  \centering
+  \begin{tabular}{lrrr}
+    \toprule
+    $h$ & $w(0)$ & cruce por ramas & $w(0)/(1-h)$\\ \midrule
+    0.50 & 0.357044 & 0.714087 & 0.714087\\
+    0.74 & 0.172682 & 0.612875 & 0.664161\\ \bottomrule
+  \end{tabular}
+  \par\medskip\raggedright
+  \texttt{equilibrium.py}: seis pruebas de regresión. \texttt{discrete\_check.py}: 20\,000
+  sorteos (semilla 0), cero fallos de los once contadores. Evidencia numérica, no prueba general.
 \end{frame}
 
 \begin{frame}[fragile]{Lean: del enunciado matemático al teorema verificado}
@@ -212,63 +225,79 @@ theorem span_strict_anti \{x y s : \(\mathbb{R}\)\} (hx : x < y) (hy : y \(\le\)
 
 \begin{frame}{Lean: qué representa cada cosa y qué verifica}
   \begin{itemize}
-    \item \texttt{P : Params} empaqueta las primitivas \emph{con} sus hipótesis: $0<h<1$ y
-      $z_1<z_2<z_3<1$. En el paper son supuestos en prosa; aquí ninguno se puede usar sin declararlo.
-    \item \texttt{hs : s < 1} es la hipótesis que hace negativa la derivada. Sin ella el lema es falso,
-      y Lean no permite omitirla.
-    \item La prueba elimina divisiones: multiplica por $h(1-x)h(1-y)>0$, usa $n(z)\,h(1-z)=1$ y cierra
-      con \texttt{lt\_of\_mul\_lt\_mul\_right}. El núcleo algebraico es una línea: la diferencia entre
-      ambos lados es $h\,(y-x)(1-s)>0$.
+    \item \texttt{P : Params} empaqueta $0<h<1$ y $0\le z_1<z_2<z_3<1$.
+      El teorema usa además $x<y\le s<1$.
+    \item \texttt{hs : s < 1} hace negativa la derivada. Para $s=1$ la
+      desigualdad estricta falla.
+    \item Multiplicamos por $h(1-x)h(1-y)>0$; usando
+      $n(z)h(1-z)=1$, la diferencia algebraica es $h(y-x)(1-s)>0$.
   \end{itemize}
   \vfill
-  \begin{block}{Build y auditoría}
-    \texttt{lake build} $\to$ exit code 0.\quad
-    \texttt{\#print axioms} $\to$ \texttt{[propext, Classical.choice, Quot.sound]} en los doce
-    teoremas: ningún \texttt{sorryAx}.
+  \begin{block}{Evidencia de compilación}
+    GitHub Actions \href{https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45582527901}{45582527901}:
+    doce teoremas discretos y once pruebas independientes del modelo continuo,
+    con solo \texttt{propext}, \texttt{Classical.choice} y \texttt{Quot.sound}.
+    Ninguna dependencia de \texttt{sorryAx}.
   \end{block}
 \end{frame}
 
 \begin{frame}{Lean: la frontera de lo verificado}
   \begin{itemize}
-    \item \textbf{Verificado}: el lema de monotonía, el umbral de capacidad como equivalencia, la
-      identidad del efecto share, que los más conocedores pierden, y la condición (N) configuración por
-      configuración.
-    \item \textbf{Demostrado en papel, no en Lean}: la existencia de una asignación factible, que exige
-      modelar masas y vaciado de mercados.
-    \item \textbf{Fuera de alcance}: que el modelo discreto traduzca fielmente al paper. Eso es juicio
-      nuestro, no del compilador.
+    \item \textbf{Discreto}: monotonía, umbral, identidad condicionada de reparto,
+      pérdida débil del tipo superior para $a=z_2$, beneficio no positivo y combinaciones afines.
+    \item \textbf{En papel y numéricamente}: construcción de asignaciones con masas y
+      vaciado; no toda esa prueba se ha trasladado a Lean.
+    \item \textbf{Continuo}: los \texttt{Spec} de Props.\ 5--6 compilan.
+      Las pruebas independientes comprueban lemas y dos defectos de traducción;
+      no demuestran las proposiciones completas.
   \end{itemize}
   \vfill
-  Lean verifica el enunciado \textbf{solo tras añadir supuestos}: (A0)--(A3), $a=z_2$ y el paso a tipos
-  finitos. Decirlo es parte del resultado.
+  El archivo original \texttt{lean/} es una salida parcial de AppliedModelingLib:
+  no se ha sustituido con una selección de los resultados nuevos.
 \end{frame}
 
-\begin{frame}{Dónde no le creí a la IA}
-  \begin{block}{Error 1 --- una configuración de firma omitida (lo vi leyendo)}
-    La primera derivación calculaba salarios con el beneficio cero de las firmas \emph{supuestas}
-    activas. Sin la condición (N) reportaba mal el salario del tipo 3 con IA no autónoma: ignoraba que
-    ese solucionador podía contratar trabajadores del tipo 2.
+\begin{frame}{Dónde no le creí a la IA: dos errores discretos}
+  \begin{block}{1. Una configuración de firma omitida}
+    El salario del tipo 3 con IA no autónoma ignoraba que el solucionador podía
+    contratar trabajadores del tipo 2. Beneficio cero en firmas activas no basta:
+    hay que verificar que ninguna desviación es rentable.
   \end{block}
-  \begin{block}{Error 2 --- una rama inadmisible (lo encontró el test)}
-    Ya con los salarios como máximos, el test falló en una de cada cinco muestras: si $a<z_1$, el tipo
-    menos conocedor puede supervisar agentes de IA. Faltaba el supuesto (A0).
+  \begin{block}{2. Una rama inadmisible}
+    El test detectó muestras con $a<z_1$: el tipo 1 podía supervisar agentes de IA.
+    Faltaba imponer (A0) o incluir una nueva configuración.
   \end{block}
   \vfill
-  \begin{alertblock}{La lección}
-    En los dos casos el argumento verbal sonaba convincente. Lo que encontró los errores fue
-    \emph{enumerar}: primero a mano, después a máquina.
-  \end{alertblock}
+  \textbf{Veredicto:} la derivación manuscrita y la enumeración de firmas
+  corrigen los errores; las 20\,000 verificaciones no sustituyen la prueba.
+\end{frame}
+\begin{frame}{Dónde no le creí a la IA: dos errores formales}
+  \small
+  \begin{block}{Ingreso laboral: un objetivo sin presupuesto}
+    $L(a)=\int w_a\,dG$. Cambiar solo $w_b(z)=L(a)+1$ conserva la factibilidad
+    original y eleva $L(b)=L(a)+1$. Lean verifica
+    \texttt{no\_labor\_income\_maximizer}.
+  \end{block}
+  \begin{block}{Unicidad: dominio del matching}
+    En el modelo nadie con $z=1$ puede ser trabajador humano de un solucionador
+    más conocedor. Alterar $m(1)$ conserva el equilibrio pero viola la igualdad
+    de funciones en todo $[0,1]$.
+    Lean verifica \texttt{no\_unique\_nonautonomous\_equilibrium}.
+  \end{block}
+  \textbf{Reparación propuesta:} comparar matching en su dominio activo y
+  restringir $L(b)+r_b\mu\le Y(b)$. Con $r_a=0$ e identidad agregada,
+  la eficiencia implica $L(b)\le Y(b)\le Y(a)=L(a)$.
+  La identidad y la prueba completa permanecen pendientes.
 \end{frame}
 
 \begin{frame}{Cierre}
   \begin{itemize}
     \item La pregunta distributiva no tiene una sola palanca: hay \textbf{dos dimensiones}, capacidad y
       autonomía, y la lectura popular las colapsa en una.
-    \item Restringir la autonomía redistribuye hacia abajo pero \emph{reduce el producto}: ese es el
-      tradeoff regulatorio que el paper pone sobre la mesa.
+    \item Restringir la autonomía favorece débilmente al extremo inferior frente a la autónoma y
+      \emph{reduce estrictamente el producto}: esa es la tensión del artículo.
     \item Lo más frágil, a mi juicio: ``siempre hay ganadores arriba'' descansa en $h<h_0$. Con
       productores independientes el propio paper admite que puede fallar, y la versión discreta muestra
-      por qué: sin rentas abajo no hay nada que capturar arriba.
+      por qué: los resultados dependen de los supuestos ocupacionales.
   \end{itemize}
   \vfill
   \centering\small Repositorio: \url{\repourl}
