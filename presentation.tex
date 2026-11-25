@@ -51,7 +51,7 @@
   Conocimiento $z\in[0,1]$ con distribución $G$; dificultad $x\sim U[0,1]$, así que $z$ es la
   probabilidad de resolver un problema solo. Cada consulta cuesta $h$ del tiempo del solucionador:
   \[
-    n(z)=\frac{1}{h(1-z)}\quad\text{trabajadores por solucionador.}
+    n(z)=\frac{1}{h(1-z)},\quad z<1\quad\text{(trabajadores por solucionador).}
   \]
   Una firma de dos capas elige a su solucionador:
   \[
@@ -103,6 +103,7 @@
   \begin{block}{IA no autónoma: Proposición 6}
     Equilibrio único y eficiente, maximiza ingreso laboral, $r^\star=0$.
     Se usa si y solo si $\zai>w(0)$; si no, se preservan salarios y ocupaciones.
+    Existe $z\in(0,1]$ con $w^\star(z)\le w(z)$ (estricto si se usa IA).
     El producto total es estrictamente menor que con IA autónoma.
   \end{block}
 \end{frame}

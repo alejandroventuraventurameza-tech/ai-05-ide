@@ -53,3 +53,7 @@ The six new endpoint proofs are pending CI at the new commit. No change to lean/
 ## Verified second campaign
 
 [Run 45582527901](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45582527901) at 8bfc3f231f190edc44297e7d14076574067ce000 completed successfully: 12 discrete and 11 source-check theorem endpoints use only the three standard axioms. This verifies both translation defects and the conditional resource-income implication, not Props. 5–6. The frozen folder remains unchanged.
+
+## Independent upstream fast check
+
+[Run 45584755327](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45584755327) replayed the prescribed command on the unchanged generated folder from snapshot `943ca1d482bad2e13422c1ace64ec9228e357c95`, using compatible historical AppliedModelingLib revision `2db7d108cd3a2cb10148974bb2a77856e7d87428`. The actual log records 8315 jobs and `PAPER_CONTRIBUTION_FAST_EXIT=0`. Root module and library registration were reconstructed outside `lean/`; the replay script compared the paper folder before and after the check. This is a successful fast structural/build check, not a proof of the Specs or evidence identifying the original upstream checkout.

@@ -57,8 +57,8 @@ jobs:
           (cd extra/tutorial && latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error tutorial-ide-talamas.tex)
           pdfinfo presentation.pdf
           pdfinfo extra/tutorial/tutorial-ide-talamas.pdf
-          if grep -E 'Overfull \\hbox|Overfull \\vbox|undefined references|LaTeX Error' presentation.log; then
-            echo "Presentation has layout or reference warnings"
+          if grep -E 'Overfull \\hbox|Overfull \\vbox|undefined references|LaTeX Error' presentation.log extra/tutorial/tutorial-ide-talamas.log; then
+            echo "Documents have layout or reference warnings"
             exit 1
           fi
           mkdir -p extra/audit/qa-render

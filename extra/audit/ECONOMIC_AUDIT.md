@@ -53,3 +53,7 @@ The rewritten endpoint module and six unittest cases were executed locally. All 
 This is a numerical counterexample to applying the AI-assisted wage formula indiscriminately in the endpoint exercise. It is not a source-level Lean theorem. The discrete driver now rejects nonpositive sample counts and returns nonzero for property failures; the seeded 20,000 draws still require independent execution at the new revision.
 
 See [LEAN_SOURCE_AUDIT.md](LEAN_SOURCE_AUDIT.md) for the frozen source-model proof and defect audit and the independent CI compilation.
+
+## Independent final regression and upstream replay
+
+[Run 45584755201](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45584755201) passed six Python regressions, the 20,000 seeded draws, all 12 discrete theorem endpoints and all 11 source-model audit endpoints. [Run 45584755327](https://github.com/alejandroventuraventurameza-tech/ai-05-ide/actions/runs/45584755327) separately passed the prescribed fast check (8315 jobs, exit 0) using the frozen folder and the compatible upstream pin. The initial updated Beamer and tutorial rendered successfully; visual inspection of every page prompted a clarification of the wage identity domain and two small layout repairs. The final documents must be rebuilt and visually reviewed at the new revision. The original paper's propositions remain not fully proved in Lean.

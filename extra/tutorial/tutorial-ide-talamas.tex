@@ -172,7 +172,7 @@ Combinando (a) y (c):
 \end{equation}
 Con conocimiento uniforme, \textbf{el salario del jefe de $z$ sube uno a uno con $z$}: $w(m(z))=C+z$.
 
-\subsection{Ejemplo resuelto: $G$ uniforme y $h=1/2$}
+\subsection{Ejemplo resuelto: \texorpdfstring{$G$ uniforme y $h=1/2$}{G uniforme y h=1/2}}
 
 Este es exactamente el caso de las figuras del paper.
 
@@ -221,9 +221,9 @@ Muestra que el valor marginal del conocimiento de un trabajador es menor que 1 (
 
 \section{Qué agrega la IA al modelo}
 
-La IA es una tecnología que convierte \emph{compute} en ``agentes de IA'' idénticos, cada uno con
-conocimiento $\zai\in[0,1)$ y cada uno consumiendo una unidad de compute. Un agente de IA es un
-\textbf{sustituto perfecto} de un humano con conocimiento $\zai$. Tres supuestos hacen todo el trabajo:
+La tecnología convierte el cómputo en agentes de IA idénticos, cada uno con conocimiento
+$\zai\in[0,1)$ y una unidad de cómputo por agente. Si la IA es autónoma, el agente es un
+\textbf{sustituto perfecto} de un humano con conocimiento $\zai$. Tres supuestos son centrales:
 
 \begin{enumerate}[label=(\roman*)]
   \item \textbf{Escalabilidad}: una vez que el conocimiento $\zai$ está en el modelo, se replica en
@@ -256,11 +256,15 @@ $\W^{*}\below\I^{*}\below\Sset^{*}$, emparejamiento positivo, y además:
 La IA siempre se usa en producción independiente; se usa además como trabajadora si $\zai\in\W$ y
 como solucionadora si $\zai\in\Sset$. Los precios son $r^{*}=\zai$ y
 \[
-  w^{*}(z)=\underbrace{\zai\Big(1-\frac{1}{n(z)}\Big)}_{z\in\W_a^{*}},\quad
-  \underbrace{m^{*}(z)-\frac{w^{*}(m^{*}(z))}{n(z)}}_{z\in\W_p^{*}},\quad
-  \underbrace{z}_{z\in\I^{*}},\quad
-  \underbrace{C^{*}+\int_{\inf \Sset_p^{*}}^{z}\! n(e^{*}(u))du}_{z\in \Sset_p^{*}},\quad
-  \underbrace{n(\zai)(z-\zai)}_{z\in \Sset_a^{*}},
+  w^*(z)=
+  \begin{cases}
+    \zai\bigl(1-1/n(z)\bigr), & z\in\W_a^*,\\
+    m^*(z)-w^*(m^*(z))/n(z), & z\in\W_p^*,\\
+    z, & z\in\I^*,\\
+    C^*+\displaystyle\int_{\inf \Sset_p^*}^z n(e^*(u))\,du,
+       & z\in\Sset_p^*,\\
+    n(\zai)(z-\zai), & z\in\Sset_a^*.
+  \end{cases}
 \]
 con $C^{*}=\inf \Sset_p^{*}$.
 \end{proposicion}
@@ -303,7 +307,7 @@ entonces $w^{*}(\zai)=w(\zai)>\zai$, y eso contradice que el humano $\zai$ compi
 perfecto que cuesta $\zai$. Si la IA no es trabajadora, tendría que ser solucionadora, pero entonces la
 economía tendría más solucionadores y menos trabajadores que antes, y el mercado no vacía.
 
-\section{Ejemplo resuelto: IA básica con $G$ uniforme y $h=1/2$}
+\section{Ejemplo resuelto: IA básica con \texorpdfstring{$G$ uniforme y $h=1/2$}{G uniforme y h=1/2}}
 
 Tomamos $\zai=0.425\in\text{int}\,\W$ (recuerda: $\W=[0,\ 0.764]$ pre-IA). Suponemos la configuración de
 la Figura~4(a) del paper: la IA se usa como trabajadora y como productora independiente, pero no como
@@ -423,7 +427,7 @@ $\zai\in[0,1)$.
 
 \section{Los dos efectos}
 
-Para cualquier $z$, el salario se puede leer como ``con quién trabajo'' por ``cuánto me llevo'':
+Para un trabajador humano emparejado con un solucionador humano, el salario se puede leer como ``con quién trabajo'' por ``cuánto me llevo'':
 \[
   w(z)=\underbrace{m(z)}_{\text{efecto \emph{match}}}-\underbrace{\frac{w(m(z))}{n(z)}}_{\text{efecto \emph{share}}}.
 \]
@@ -484,7 +488,7 @@ supervisa agentes de IA y cobra
 \textbf{independientemente de $\zai$}. Con $h=1/2$ eso da $2$, contra $w(1)\approx1.578$ pre-IA. El de
 arriba gana en esta configuración, y su salario es independiente de la capacidad mientras supervise IA. El resultado general de existencia de ganadores arriba es la Proposición~5 bajo sus hipótesis.
 
-\section{Tabla de resultados (uniforme, $h=1/2$)}
+\section{Tabla de resultados (uniforme, \texorpdfstring{$h=1/2$}{h=1/2})}
 
 \begin{table}[h]
 \centering
